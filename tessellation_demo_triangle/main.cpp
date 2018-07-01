@@ -7,12 +7,11 @@ Author: Ying Zhang
 Controller:
 Raise/Lower "inner" tessellation factor: O/K keys
 Raise/Lower "outter" tessellation factor: P/L keys
-// Prev/Next Scene: <- / -> keys
 ***/
+
 #include <gl_yz.h>        // self-defined library
 #include "gl_utils.h"     // helper functions for check info, check error
 #include "make_shaders.h" // helper functions for make shader programs
-//#include "Scene.h"
 
 #include <iostream>
 #include <string>

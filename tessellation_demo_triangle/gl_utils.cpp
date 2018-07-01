@@ -34,7 +34,7 @@ void print_version_info ()
 }
 
 // get max patch number that supported
-GLint get_max_patch () () {
+GLuint get_max_patch () {
 	GLint MaxPatchVertices = 0;
 	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
 	cout << "Max supported patch vertices: " << MaxPatchVertices << endl;
