@@ -11,6 +11,21 @@ void windowResizedCallback (GLFWwindow* window, int width, int height)
 	cout << "window width: " << width <<", height: " << height << endl;
 }
 
+// a call-back function when a GLFW function fails
+void errorCallback (int error, const char* description)
+{
+	cerr << "ERROR: " << description << endl;
+}
+
+// a call-back function for key event
+void keyCallback (GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	// set q or ESC as quit
+	if ((key == GLFW_KEY_ESCAPE || key == GLFW_KEY_Q) && action == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+	}
+}
+
 // print version info
 void print_version_info ()
 {
@@ -18,11 +33,12 @@ void print_version_info ()
 	cout << "OpenGl version:" << glGetString(GL_VERSION) << endl;
 }
 
-// print max patch number that supported
-void print_max_patch () {
+// get max patch number that supported
+GLint get_max_patch () () {
 	GLint MaxPatchVertices = 0;
 	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
-	cout << "Max supported patch vertices: " << MaxPatchVertices << endl;	
+	cout << "Max supported patch vertices: " << MaxPatchVertices << endl;
+	return MaxPatchVertices;
 }
 
 // print shader file
