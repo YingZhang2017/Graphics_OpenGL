@@ -4,16 +4,16 @@
 layout (vertices = 3) out;
 
 // from vs
-in vec3 controlpoint_wor[];
+in vec3 ctr_point_out[];
 
 // to tes
-out vec3 evaluationpoint_wor[];
+out vec3 eva_point_out[];
 
-uniform float tess_fac_inner = 1.0; // controlled by keyboard buttons
-uniform float tess_fac_outer = 1.0; // controlled by keyboard buttons
+uniform float tess_fac_inner = 1.0;
+uniform float tess_fac_outer = 1.0;
 
 void main () {
-	evaluationpoint_wor[gl_InvocationID] = controlpoint_wor[gl_InvocationID];
+	eva_point_out[gl_InvocationID] = ctr_point_out[gl_InvocationID];
 
 	// Calculate the tessellation levels
 	gl_TessLevelInner[0] = tess_fac_inner; // number of nested primitives to generate

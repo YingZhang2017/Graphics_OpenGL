@@ -1,5 +1,4 @@
 #version 410
-// triangles, quads, or isolines
 layout (isolines) in;
 out vec3 colour;
 

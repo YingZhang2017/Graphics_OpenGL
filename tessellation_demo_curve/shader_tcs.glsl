@@ -2,7 +2,7 @@
 
 // number of CPs in patch
 layout (vertices = 4) out;
-uniform float tess_fac_outer = 1.0; // controlled by keyboard buttons
+uniform float tess_fac_outer = 1.0; // controlled by keyboard
 
 void main () {
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;

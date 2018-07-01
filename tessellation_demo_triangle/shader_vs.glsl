@@ -1,9 +1,8 @@
 #version 410
 
-in vec3 vp_loc;
-out vec3 controlpoint_wor;
+in vec3 vert_loc;
+out vec3 ctr_point_out;
 
 void main() {
-	// control points out == vertex points in
-	controlpoint_wor = vp_loc;
+	ctr_point_out = vert_loc;
 }
