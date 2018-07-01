@@ -23,7 +23,7 @@ int window_width = 1280;
 int window_height = 720;
 
 // set default max patch vertices number
-GLuint max_patch_vert = 4;
+GLuint max_patch_vert = -1;
 
 // define the shader file names. If NA, set it as NULL
 const char* vertex_shader_file = "shader_vs.glsl";
@@ -92,7 +92,10 @@ int main () {
 
   // check max patch supported
   max_patch_vert = get_max_patch();
-
+  if(max_patch_vert < 0) {
+    cerr << "ERROR: incorrect max patch vertices number." << endl;
+    return -1;
+  }
   // retrieve the current size of framebuffer of a window
   glfwGetFramebufferSize(window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
