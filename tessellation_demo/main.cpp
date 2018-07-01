@@ -5,19 +5,16 @@ Author: Ying Zhang
 Controller:
 Raise/Lower "inner" tessellation factor: O/K keys
 Raise/Lower "outter" tessellation factor: P/L keys
+// Prev/Next Scene: <- / -> keys
 ***/
-
-#include <GL/glew.h>    // include GLEW
-#include <GLFW/glfw3.h> // include GLFW
-
+#include <gl_yz.h>        // self-defined library
 #include "gl_utils.h"     // helper functions for check info, check error
 #include "make_shaders.h" // helper functions for make shader programs
+//#include "Scene.h"
 
 #include <iostream>
 #include <string>
-//#include <stdlib>
-//#include <time>
-//#include <assert.h>
+
 using namespace std;
 
 // define the original window size
@@ -35,7 +32,7 @@ const char* fragment_shader_file = "shader_fs.glsl";
 
 // define the initial inner/outter tessellation factor
 float inner_tess_fac = 1.0;
-float outer_tess_fac = 4.0;
+float outer_tess_fac = 1.0;
 
 
 int main () {
@@ -86,6 +83,9 @@ int main () {
   // print out version info
   print_version_info();
 
+  // check max patch supported
+  print_max_patch();
+
   // retrieve the current size of framebuffer of a window
   glfwGetFramebufferSize(window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
@@ -122,9 +122,9 @@ int main () {
 	int outer_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_outer");
 	int inner_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_inner");
 
-  glEnable (GL_CULL_FACE); // cull face
-	glCullFace (GL_BACK); // cull back face
-	glFrontFace (GL_CW); // GL_CCW for counter clock-wise
+  glEnable (GL_CULL_FACE);
+	glCullFace (GL_BACK);
+	glFrontFace (GL_CW);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPatchParameteri (GL_PATCH_VERTICES, 3);
 

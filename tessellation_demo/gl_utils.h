@@ -14,6 +14,9 @@ void windowResizedCallback (GLFWwindow* window, int width, int height);
 // print version info
 void print_version_info ();
 
+// print max patch number that supported 
+void print_max_patch ();
+
 // print shader file
 void print_shader_file (const char* fileName, char* buff);
 

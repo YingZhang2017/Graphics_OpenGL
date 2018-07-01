@@ -4,6 +4,6 @@ in vec3 vp_loc;
 out vec3 controlpoint_wor;
 
 void main() {
-	controlpoint_wor = vp_loc; // control points out == vertex points in
+	// control points out == vertex points in
+	controlpoint_wor = vp_loc;
 }
-

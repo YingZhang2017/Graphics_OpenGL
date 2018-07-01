@@ -1,7 +1,3 @@
-/*
-  parserShader(): refer to cs770 demo's makeShader.cpp
-*/
-
 #include "make_shaders.h"
 #include "gl_utils.h"
 #include <iostream>

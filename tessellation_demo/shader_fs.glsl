@@ -1,6 +1,6 @@
 #version 410
 
-in vec3 colour; // i made this up in the tess. evaluation shader
+in vec3 colour;
 out vec4 fragcolour;
 
 void main () {

@@ -18,6 +18,13 @@ void print_version_info ()
 	cout << "OpenGl version:" << glGetString(GL_VERSION) << endl;
 }
 
+// print max patch number that supported
+void print_max_patch () {
+	GLint MaxPatchVertices = 0;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &MaxPatchVertices);
+	cout << "Max supported patch vertices: " << MaxPatchVertices << endl;	
+}
+
 // print shader file
 void print_shader_file (const char* fileName, char* buff)
 {
