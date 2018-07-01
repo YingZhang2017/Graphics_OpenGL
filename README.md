@@ -11,11 +11,11 @@ The libraries reside in the /include/
 * inlcude/osx - 64-bit Mac OS libraries
 
 ## compile ##
-`make -f Makefile`
+* `make -f Makefile`
 
 ## bash script ##
-`bash clear.sh` - clean all complied and execute files
-`bash rebuild.sh` - clean and recompile, then auto run executable program
+* `bash clear.sh` - clean all complied and execute files
+* `bash rebuild.sh` - clean and recompile, then auto run executable program
 
 ## file definition ##
 * main.cpp - main program
