@@ -14,5 +14,7 @@ void windowResizedCallback (GLFWwindow* window, int width, int height);
 // print version info
 void print_version_info ();
 
+// print shader file
+void print_shader_file (const char* fileName, char* buff);
 
 #endif

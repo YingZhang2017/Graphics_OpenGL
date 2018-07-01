@@ -17,8 +17,7 @@ Raise/Lower "outter" tessellation factor: P/L keys
 #include <string>
 //#include <stdlib>
 //#include <time>
-//#include <assert>
-
+//#include <assert.h>
 using namespace std;
 
 // define the original window size
@@ -26,17 +25,17 @@ int window_width = 1280;
 int window_height = 720;
 
 
-// define the shader file names. If NA, set it as ""
+// define the shader file names. If NA, set it as NULL
 const char* vertex_shader_file = "shader_vs.glsl";
 const char* tess_ctrl_shader_file = "shader_tcs.glsl";
 const char* tess_eval_shader_file = "shader_tes.glsl";
-const char* geometry_shader_file = "";
+const char* geometry_shader_file = NULL;
 const char* fragment_shader_file = "shader_fs.glsl";
 
 
 // define the initial inner/outter tessellation factor
-float inner_tess_factor = 1.0;
-float outter_tess_factor = 1.0;
+float inner_tess_fac = 1.0;
+float outer_tess_fac = 4.0;
 
 
 int main () {
@@ -119,7 +118,15 @@ int main () {
                                         tess_eval_shader_file,
                                         geometry_shader_file,
                                         fragment_shader_file);
-  glUseProgram(shader_programme);
+
+	int outer_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_outer");
+	int inner_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_inner");
+
+  glEnable (GL_CULL_FACE); // cull face
+	glCullFace (GL_BACK); // cull back face
+	glFrontFace (GL_CW); // GL_CCW for counter clock-wise
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPatchParameteri (GL_PATCH_VERTICES, 3);
 
   // start loop
   while (!glfwWindowShouldClose(window)) {
@@ -129,16 +136,67 @@ int main () {
     if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_Q)) {
       break;
     }
+    // handle key controls for controlling tessellation factors; q,a,w,s
+		static bool o_was_down = false;
+		static bool k_was_down = false;
+		static bool p_was_down = false;
+		static bool l_was_down = false;
+
+		if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_O)) {
+			if (!o_was_down) {
+				inner_tess_fac += 1.0f;
+				cout << "inner tess. factor = " << inner_tess_fac << endl;
+				o_was_down = true;
+				glUniform1f (inner_tess_fac_loc, inner_tess_fac);
+			}
+		} else {
+			o_was_down = false;
+		}
+
+		if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_K)) {
+			if (!k_was_down) {
+				inner_tess_fac -= 1.0f;
+				cout << "inner tess. factor = " << inner_tess_fac << endl;
+				k_was_down = true;
+				glUniform1f (inner_tess_fac_loc, inner_tess_fac);
+			}
+		} else {
+			k_was_down = false;
+		}
+
+		if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_P)) {
+			if (!p_was_down) {
+				outer_tess_fac += 1.0f;
+				cout << "outer tess. factor = " << outer_tess_fac << endl;
+				p_was_down = true;
+				glUniform1f (outer_tess_fac_loc, outer_tess_fac);
+			}
+		} else {
+			p_was_down = false;
+		}
+
+		if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_L)) {
+			if (!l_was_down) {
+				outer_tess_fac -= 1.0f;
+        cout << "outer tess. factor = " << outer_tess_fac << endl;
+				l_was_down = true;
+				glUniform1f (outer_tess_fac_loc, outer_tess_fac);
+			}
+		} else {
+			l_was_down = false;
+		}
+
+    //======================
 
     // clear the buff first
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // use shader program
-    // glUseProgram(shader_programme);
 
+    // use shader program
+    glUseProgram(shader_programme);
     // draw triangle
-    glUseProgram(vao);
     glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_PATCHES, 0, 3);
+
     // display buffer stuff on screen
     glfwSwapBuffers(window);
   }
