@@ -14,11 +14,13 @@
     #if defined(__APPLE__)  // Mac OS version
     #   include <GL/glew.h>    // include GLEW
     #   include <GLFW/glfw3.h> // include GLFW
+    #   include <glm/glm.hpp> // include GLM
     #   include <math.h>       // include math library
     //#   include "linmath.h"
     #else // win/linux
     #   include <GL/glew.h>    // include GLEW
     #   include <GLFW/glfw3.h> // include GLFW
+    #   include <glm/glm.hpp> // include GLM
     #   include <math.h>
     #endif
  #endif

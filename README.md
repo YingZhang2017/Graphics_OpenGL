@@ -8,6 +8,7 @@ The libraries reside in the /include/
 * include/gl-yz.h - customized header file for multiple os
 * include/GL - GLEW(v2.1.0)
 * include/GLFW - GLFW(v3.2)
+* include/glm - OpenGL Mathematics(v0.9.9.0)
 * inlcude/osx - 64-bit Mac OS libraries
 
 ## compile ##
