@@ -87,12 +87,27 @@ GLuint makeShaders(const char* v_shader,
       exit(EXIT_FAILURE);
     }
 
-    // detach shaders after link successfully
-    if (v_shader) glDetachShader(shader_programme, vs);
-    if (tc_shader) glDetachShader(shader_programme, tcs);
-    if (te_shader) glDetachShader(shader_programme, tes);
-    if (g_shader) glDetachShader(shader_programme, gs);
-    if (f_shader) glDetachShader(shader_programme, fs);
+    // detach shaders and delete after link successfully to free mem
+    if (v_shader) {
+      glDetachShader(shader_programme, vs);
+      glDeleteShader(vs);
+    }
+    if (tc_shader) {
+      glDetachShader(shader_programme, tcs);
+      glDeleteShader(tcs);
+    }
+    if (te_shader) {
+      glDetachShader(shader_programme, tes);
+      glDeleteShader(tes);
+    }
+    if (g_shader) {
+      glDetachShader(shader_programme, gs);
+      glDeleteShader(gs);
+    }
+    if (f_shader) {
+      glDetachShader(shader_programme, fs);
+      glDeleteShader(fs);
+    }
 
     return shader_programme;
 }
