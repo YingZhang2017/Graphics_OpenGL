@@ -14,10 +14,16 @@
     #if defined(__APPLE__)  // Mac OS version
     #   include <GL/glew.h>    // include GLEW
     #   include <GLFW/glfw3.h> // include GLFW
-    #   include <mat.h>        // include a sub math library
+    #   include <glm/glm.hpp>  // include gl math library
+    // include glm transformations matrix library
+    #   include <glm/gtx/transform.hpp>
+    #   include <glm/gtc/matrix_transform.hpp>
     #else // win/linux
     #   include <GL/glew.h>    // include GLEW
     #   include <GLFW/glfw3.h> // include GLFW
-    #   include <mat.h>        // include a sub math library
+    #   include <glm/glm.hpp>  // include gl math library
+    // include glm transformations matrix library
+    #   include <glm/gtx/transform.hpp>
+    #   include <glm/gtc/matrix_transform.hpp>
     #endif
  #endif
