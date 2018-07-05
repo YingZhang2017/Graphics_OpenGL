@@ -22,5 +22,7 @@ GLuint makeShaders(const char* v_shader,
                    const char* g_shader,
                    const char* f_shader);
 
+// log err for shader link
+void printShaderLinkError (GLuint shader_programme);
 
 #endif
