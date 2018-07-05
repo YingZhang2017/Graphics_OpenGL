@@ -26,6 +26,14 @@ if [ -e main.gcno ]; then
   rm  main.gcno
 fi
 
+if [ -e Shape3D.gcda ]; then
+  rm  Shape3D.gcda
+fi
+
+if [ -e Shape3D.gcno ]; then
+  rm  Shape3D.gcno
+fi
+
 if [ -e tessellation_demo ]; then
   rm  tessellation_demo
 fi
