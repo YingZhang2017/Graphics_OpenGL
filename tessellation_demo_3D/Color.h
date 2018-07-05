@@ -5,14 +5,30 @@
 #ifndef COLOR_H
 #define COLOR_H
 
+#include <string>
+using namespace std;
+
 class Color {
 public:
   float r, g, b, a;
+  // ------ Constructor -----------
   Color(): r(1.0), g(1.0), b(1.0){}
   Color(float red, float green, float blue, float alpha = 1.0f) : r(red), g(green), b(blue), a(alpha){}
-
+  Color( const Color& c ): r(c.r), g(c.g), b(c.b), a(c.a) {}
+  Color(string colorName) { set(colorName); }
+  // ------- reset color ----------
   inline void set(float red, float green, float blue, float alpha = 1.0f){
     r = red; g = green; b = blue; a = alpha;
+  }
+  inline void set(string colorName) {
+    if (colorName == "IndiaRed") set_IndiaRed();
+    if (colorName == "Coral")    set_Coral();
+    if (colorName == "Salmon")   set_Salmon();
+    if (colorName == "Orange")   set_Orange();
+    if (colorName == "Violet")   set_Violet();
+    if (colorName == "ForestGreen")  set_ForestGreen();
+    if (colorName == "SteelBlue")    set_SteelBlue();
+    if (colorName == "DogerBlue")    set_DogerBlue();
   }
   // predifined colors
   inline void set_IndiaRed() { r = 0.804; g = 0.361; b = 0.361; a = 1.0; }

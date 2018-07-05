@@ -1,6 +1,8 @@
 /***
-This is a demo programm for tessellation shader in OpenGL
-for a traiangle with tesslation.
+This is a opengl program that demostrate 3D objects
+with lighting, transformation, tessellation shader
+and geometry shader. It supports interaction through
+keyboard to show the effective of above functionalities.
 
 Author: Ying Zhang
 ==========
@@ -13,10 +15,16 @@ Raise/Lower "outter" tessellation factor: P/L keys
 #include "gl_utils.h"     // helper functions for check info, check error
 #include "make_shaders.h" // helper functions for make shader programs
 
+#include "Shape3D.h"
+#include "Color.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
 
+// enable glm/gxt/transforme.hpp
+#define GLM_ENABLE_EXPERIMENTAL
+using namespace glm;
 using namespace std;
 
 // struct for saving shader uniform vars
@@ -49,28 +57,29 @@ int main () {
   // init glfw, glew, create window
   GLFWwindow* window = init();
 
-
+  //=========================
   // set triangle coordinates
   GLfloat tri_points [] = {
     0.0f, 0.8f, 0.0f,
-    0.4f, -0.4f, 0.0f,
-    -0.4f, -0.4f, 0.0f,
+    0.4f, 0.0f, 0.0f,
+    -0.4f, 0.0f, 0.0f
   };
 
-  // vbo
+  int nVertices = sizeof(tri_points)/sizeof(GLfloat)/3;
+
+  // create and active vao
+  GLuint vao;
+  glGenVertexArrays(1, &vao);
+  glBindVertexArray(vao);
+
+  // create and active vbo
   GLuint tri_points_vbo;
   glGenBuffers(1, &tri_points_vbo);
   glBindBuffer(GL_ARRAY_BUFFER, tri_points_vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(tri_points), tri_points, GL_STATIC_DRAW);
 
-  // vao
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-  glBindBuffer(GL_ARRAY_BUFFER, tri_points_vbo);
+  glEnableVertexAttribArray(0); // index of vao. if only 1, use 0
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-  glEnableVertexAttribArray(0);
-
 
   // set shader program
   GLuint shader_programme = makeShaders(vertex_shader_file,
@@ -89,20 +98,21 @@ int main () {
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glPatchParameteri (GL_PATCH_VERTICES, 3);
 
+
   // start loop
   while (!glfwWindowShouldClose(window)) {
-    // handle key controls as input
-    handleKeyboard(window, suv);
-
     // clear the buff first
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // handle key controls as input
+    handleKeyboard(window, suv);
 
     // use shader program
     glUseProgram(shader_programme);
 
     // draw triangle
     glBindVertexArray(vao);
-    glDrawArrays(GL_PATCHES, 0, 3);
+    glDrawArrays(GL_PATCHES, 0, nVertices);
 
     // display buffer stuff on screen
     glfwSwapBuffers(window);
@@ -211,7 +221,7 @@ static void handleKeyboard (GLFWwindow* window, ShaderUniformVars suv)
   }
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_K)) {
-    if (!k_was_down) {
+    if (!k_was_down && inner_tess_fac > 1.0f) {
       inner_tess_fac -= 1.0f;
       cout << "inner tess. factor = " << inner_tess_fac << endl;
       k_was_down = true;
@@ -233,7 +243,7 @@ static void handleKeyboard (GLFWwindow* window, ShaderUniformVars suv)
   }
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_L)) {
-    if (!l_was_down) {
+    if (!l_was_down && outer_tess_fac > 1.0f) {
       outer_tess_fac -= 1.0f;
       cout << "outer tess. factor = " << outer_tess_fac << endl;
       l_was_down = true;
