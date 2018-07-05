@@ -1,6 +1,6 @@
 /***
 This is a demo programm for tessellation shader in OpenGL
-for a PNtraiangles (Point Normal Triangles) with tesslation.
+for a simple 3D object with trnsformation and tesslation
 
 "maths_funcs.h": source:  "Anton's OpenGL 4 Tutorials"
 
@@ -10,6 +10,7 @@ Controller:
 Raise/Lower "inner" tessellation factor: O/K keys
 Raise/Lower "outter" tessellation factor: P/L keys
 Move object position: LEFT/RIGHT/UP/DOWN keys
+Scale object with change tess factor: A/Z keys
 ***/
 #include <gl_yz.h>        // self-defined library
 #include "gl_utils.h"     // helper functions for check info, check error
