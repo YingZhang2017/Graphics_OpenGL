@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+#include <vector>
 
 using namespace std;
 
@@ -32,7 +33,11 @@ GLuint makeShader(const char* shaderFileName, GLenum shaderType)
     int compiled = -1;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
     if (compiled != GL_TRUE) {
+      GLsizei log_length = 0;
+      GLchar message[1024];
+      glGetShaderInfoLog(shader, 1024, &log_length, message);
       cerr << "ERROR: compile failed for shader: " << shaderFileName << endl;
+      cerr << message << endl;
       exit(EXIT_FAILURE);
     }
 
@@ -82,32 +87,28 @@ GLuint makeShaders(const char* v_shader,
     glGetProgramiv(shader_programme, GL_LINK_STATUS, &linked);
     if (linked != GL_TRUE) {
       cerr << "ERROR: cannot link shader program, index:" << shader_programme << endl;
+      printShaderLinkError(shader_programme);
       // delete program before exit
       glDeleteProgram(shader_programme);
       exit(EXIT_FAILURE);
     }
 
-    // detach shaders and delete after link successfully to free mem
-    if (v_shader) {
-      glDetachShader(shader_programme, vs);
-      glDeleteShader(vs);
-    }
-    if (tc_shader) {
-      glDetachShader(shader_programme, tcs);
-      glDeleteShader(tcs);
-    }
-    if (te_shader) {
-      glDetachShader(shader_programme, tes);
-      glDeleteShader(tes);
-    }
-    if (g_shader) {
-      glDetachShader(shader_programme, gs);
-      glDeleteShader(gs);
-    }
-    if (f_shader) {
-      glDetachShader(shader_programme, fs);
-      glDeleteShader(fs);
-    }
+    // detach shaders after link successfully
+    if (v_shader) glDetachShader(shader_programme, vs);
+    if (tc_shader) glDetachShader(shader_programme, tcs);
+    if (te_shader) glDetachShader(shader_programme, tes);
+    if (g_shader) glDetachShader(shader_programme, gs);
+    if (f_shader) glDetachShader(shader_programme, fs);
 
     return shader_programme;
+}
+
+void printShaderLinkError (GLuint shader_programme) {
+  GLint maxLength = 0;
+  glGetProgramiv(shader_programme, GL_INFO_LOG_LENGTH, &maxLength);
+  // The maxLength includes the NULL character
+  std::vector<GLchar> infoLog(maxLength);
+  glGetProgramInfoLog(shader_programme, maxLength, &maxLength, &infoLog[0]);
+  for (int i = 0; i < infoLog.size(); i++) cout << infoLog[i];
+  cout << endl;
 }
