@@ -1,24 +1,27 @@
 #version 410
 
 // number of CPs in patch
-layout (vertices = 1) out;
+layout (vertices = 3) out;
 
 uniform float tess_fac_inner = 1.0;
 uniform float tess_fac_outer = 1.0;
 
-uniform mat4 projection_mat, view_mat, model_mat;
-in vec3 position_eye, normal_eye;
+// in vec3 position_eye, normal_eye, texcoord_eye;
 
 // from vs
-in vec3 ctr_point_out[];
+in vec3 v_position[], v_normal[];
+in vec2 v_texcord[];
 
 // to tes
-out vec3 eva_point_out[];
+out vec3 tc_position[], tc_normal[];
+out vec2 tc_texcord[];
 
 
 
 void main () {
-	eva_point_out[gl_InvocationID] = ctr_point_out[gl_InvocationID];
+	tc_position[gl_InvocationID] = v_position[gl_InvocationID];
+	tc_normal[gl_InvocationID] = v_normal[gl_InvocationID];
+	tc_texcord[gl_InvocationID] = v_texcord[gl_InvocationID];
 
 	// Calculate the tessellation levels
 	gl_TessLevelInner[0] = tess_fac_inner; // number of nested primitives to generate

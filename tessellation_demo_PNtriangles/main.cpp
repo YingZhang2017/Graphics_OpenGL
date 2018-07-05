@@ -30,8 +30,8 @@ GLuint max_patch_vert = 1;
 
 // define the shader file names. If NA, set it as NULL
 const char* vertex_shader_file = "shader_vs.glsl";
-const char* tess_ctrl_shader_file = NULL; //"shader_tcs.glsl";
-const char* tess_eval_shader_file = NULL; //"shader_tes.glsl";
+const char* tess_ctrl_shader_file = "shader_tcs.glsl";
+const char* tess_eval_shader_file = "shader_tes.glsl";
 const char* geometry_shader_file = NULL;
 const char* fragment_shader_file = "shader_fs.glsl";
 
@@ -96,11 +96,8 @@ int main () {
 	int inner_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_inner");
 
   // init states
-  glEnable (GL_CULL_FACE);
-	glCullFace (GL_BACK);
-	glFrontFace (GL_CW);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	//glPatchParameteri (GL_PATCH_VERTICES, 3);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPatchParameteri (GL_PATCH_VERTICES, 3);
 
   // start loop
   while (!glfwWindowShouldClose(window)) {
@@ -210,8 +207,7 @@ int main () {
 
     // render the object
     glBindVertexArray(vao);
-    //glDrawArrays(GL_PATCHES, 0, 3);
-    glDrawArrays (GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_PATCHES, 0, 12);
 
     // display buffer stuff on screen
     glfwSwapBuffers(window);
@@ -298,21 +294,26 @@ static GLFWwindow* init () {
 static GLuint GeneraterObjectVAO () {
     // set triangle coordinates.
     GLfloat tri_points [] = {
-      -0.7f, -0.8f, 0.0f,
-      -0.1f, 0.7f, 0.0f,
-      0.8f, -0.2f, 0.0f,
+      // -0.7f, -0.8f, 0.0f,   -0.1f, 0.7f, 0.0f,   0.8f, -0.2f, 0.0f,
+      0.0f, 0.5f, 0.0f,    -0.5f, -0.5f, 0.0f,     0.5f, -0.5f, 0.0f,
+      0.0f, 0.5f, 0.0f,    -0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 0.5f,
+      0.0f, 0.5f, 0.0f,     0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 0.5f,
+      -0.5f, -0.5f, 0.0f,   0.5f, -0.5f, 0.0f,     0.0f, 0.0f, 0.5f
     };
 
     GLfloat tri_normals [] = {
-      0.0f, 0.0f,  1.0f,
-		  0.0f, 0.0f,  1.0f,
-		  0.0f, 0.0f,  1.0f,
+      0.0f, 0.0f,  1.0f,   0.0f, 0.0f,  1.0f,    0.0f, 0.0f,  1.0f,
+      0.0f, 0.0f,  1.0f,   0.0f, 0.0f,  1.0f,    0.0f, 0.0f,  1.0f,
+      0.0f, 0.0f,  1.0f,   0.0f, 0.0f,  1.0f,    0.0f, 0.0f,  1.0f,
+      0.0f, 0.0f,  1.0f,   0.0f, 0.0f,  1.0f,    0.0f, 0.0f,  1.0f
+
     };
 
     GLfloat tri_textCords [] = {
-      0.0f, 0.0f,
-      0.0f, 0.0f,
-      0.0f, 0.0f
+      0.0f, 0.0f,   0.0f, 0.0f,   0.0f, 0.0f,
+      0.0f, 0.0f,   0.0f, 0.0f,   0.0f, 0.0f,
+      0.0f, 0.0f,   0.0f, 0.0f,   0.0f, 0.0f,
+      0.0f, 0.0f,   0.0f, 0.0f,   0.0f, 0.0f
     };
 
     // vbo
