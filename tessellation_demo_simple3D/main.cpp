@@ -122,7 +122,7 @@ int main () {
 
 		if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_K)) {
 			if (!k_was_down) {
-				inner_tess_fac -= 1.0f;
+        inner_tess_fac = inner_tess_fac > 0 ? inner_tess_fac - 1.0 : 0.0;
 				cout << "inner tess. factor = " << inner_tess_fac << endl;
 				k_was_down = true;
 				glUniform1f (inner_tess_fac_loc, inner_tess_fac);
@@ -144,7 +144,7 @@ int main () {
 
 		if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_L)) {
 			if (!l_was_down) {
-				outer_tess_fac -= 1.0f;
+        outer_tess_fac = outer_tess_fac > 0 ? inner_tess_fac - 1.0 : 0.0;
         cout << "outer tess. factor = " << outer_tess_fac << endl;
 				l_was_down = true;
 				glUniform1f (outer_tess_fac_loc, outer_tess_fac);
@@ -198,6 +198,43 @@ int main () {
     } else {
       down_was_down = false;
     }
+
+    // scale obj by keyborad A/Z
+    static bool a_was_down = false;
+    static bool z_was_down = false;
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_A)) {
+      if (!a_was_down) {
+        a_was_down = true;
+        model_mat.m[14] += 0.1;
+        glUniformMatrix4fv (model_mat_location, 1, GL_FALSE, model_mat.m);
+
+        inner_tess_fac += 1.0;
+        outer_tess_fac += 1.0;
+        glUniform1f (inner_tess_fac_loc, inner_tess_fac);
+        glUniform1f (outer_tess_fac_loc, outer_tess_fac);
+        cout << "inner tess = " << inner_tess_fac << ", outer tess = " << outer_tess_fac << endl;
+      }
+    } else {
+      a_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_Z)) {
+      if (!z_was_down) {
+        z_was_down = true;
+        model_mat.m[14] -= 0.1;
+        glUniformMatrix4fv (model_mat_location, 1, GL_FALSE, model_mat.m);
+
+        inner_tess_fac = inner_tess_fac > 0 ? inner_tess_fac - 1.0 : 0.0;
+        outer_tess_fac = outer_tess_fac > 0 ? inner_tess_fac - 1.0: 0.0;
+        glUniform1f (inner_tess_fac_loc, inner_tess_fac);
+        glUniform1f (outer_tess_fac_loc, outer_tess_fac);
+        cout << "inner tess = " << inner_tess_fac << ", outer tess = " << outer_tess_fac << endl;
+      }
+    } else {
+      z_was_down = false;
+    }
+
 
     // clear the buff first
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
