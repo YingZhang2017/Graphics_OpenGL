@@ -5,7 +5,7 @@ INC = -I ../include -I/sw/include -I/usr/local/include
 LIB_PATH = ../include/osx/
 LOC_LIB = $(LIB_PATH)libGLEW.a $(LIB_PATH)libglfw3.a
 FRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit
-SRC = main.cpp gl_utils.cpp make_shaders.cpp Shape3D.cpp
+SRC = main.cpp gl_utils.cpp Shader.cpp Shape3D.cpp
 
 all:
 	${CC} ${FLAGS} ${FRAMEWORKS} -o ${BIN} ${SRC} ${INC} ${LOC_LIB}

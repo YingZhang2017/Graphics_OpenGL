@@ -12,9 +12,9 @@ Raise/Lower "outter" tessellation factor: P/L keys
 ***/
 
 #include <gl_yz.h>        // self-defined library
-#include "gl_utils.h"     // helper functions for check info, check error
-#include "make_shaders.h" // helper functions for make shader programs
+#include "gl_utils.h"     // helper functions for check info/error
 
+#include "Shader.h"       // Shader class for shader program
 #include "Shape3D.h"
 #include "Color.h"
 
@@ -22,34 +22,20 @@ Raise/Lower "outter" tessellation factor: P/L keys
 #include <string>
 #include <vector>
 
-// enable glm/gxt/transforme.hpp
-#define GLM_ENABLE_EXPERIMENTAL
 using namespace glm;
 using namespace std;
-
-// struct for saving shader uniform vars
-struct ShaderUniformVars{
-  int inner_tess_fac_loc;
-  int outer_tess_fac_loc;
-};
 
 // define the original window size
 int window_width = 1280;
 int window_height = 720;
-// set default max patch vertices number
-GLuint max_patch_vert = 1;
+
 // define the initial inner/outter tessellation factor
-static float inner_tess_fac = 1.0;
-static float outer_tess_fac = 1.0;
-// define the shader file names. If NA, set it as NULL
-const char* vertex_shader_file = "shader_vs.glsl";
-const char* tess_ctrl_shader_file = "shader_tcs.glsl";
-const char* tess_eval_shader_file = "shader_tes.glsl";
-const char* geometry_shader_file = NULL;
-const char* fragment_shader_file = "shader_fs.glsl";
+static float tess_fac_inner = 1.0;
+static float tess_fac_outer = 1.0;
+
 
 static GLFWwindow* init();
-static void handleKeyboard(GLFWwindow* window, ShaderUniformVars suv);
+static void handleKeyboard(GLFWwindow* window, Shader shader);
 
 
 // ======================= main ===========================
@@ -81,16 +67,15 @@ int main () {
   glEnableVertexAttribArray(0); // index of vao. if only 1, use 0
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-  // set shader program
-  GLuint shader_programme = makeShaders(vertex_shader_file,
-                                        tess_ctrl_shader_file,
-                                        tess_eval_shader_file,
-                                        geometry_shader_file,
-                                        fragment_shader_file);
-  // shader uniform variables
-  ShaderUniformVars suv;
-  suv.outer_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_outer");
-	suv.inner_tess_fac_loc = glGetUniformLocation(shader_programme, "tess_fac_inner");
+  // create shader program
+  Shader shader_programme("shader_vs.glsl",
+                          "shader_tcs.glsl",
+                          "shader_tes.glsl",
+                          NULL,
+                          "shader_fs.glsl");
+  // set shader uniform variables
+  shader_programme.setFloat("tess_fac_outer", tess_fac_outer);
+  shader_programme.setFloat("tess_fac_inner", tess_fac_inner);
 
   glEnable (GL_CULL_FACE);
 	glCullFace (GL_BACK);
@@ -105,10 +90,10 @@ int main () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // handle key controls as input
-    handleKeyboard(window, suv);
+    handleKeyboard(window, shader_programme);
 
     // use shader program
-    glUseProgram(shader_programme);
+    shader_programme.use();
 
     // draw triangle
     glBindVertexArray(vao);
@@ -129,24 +114,20 @@ int main () {
 */
 static GLFWwindow* init ()
 {
-  // print out some major info
-  cout << glfwGetVersionString() << endl;
-
   // init glfw
+  cout << glfwGetVersionString() << endl;
   if (!glfwInit()) {
     cerr << "ERROR: can not start GLFW" << endl;
     exit(EXIT_FAILURE);
   }
-
-  // specify openGL3.2 for MAC OS
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   #ifdef APPLE
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   #endif
 
-  // create window
+  // create glfw window
   GLFWwindow* window = glfwCreateWindow(window_width,
                                         window_height,
                                         "OpenGL Tessellation Shader Demo_1",
@@ -181,11 +162,11 @@ static GLFWwindow* init ()
   print_version_info();
 
   // check max patch supported
-  max_patch_vert = get_max_patch();
-  if(max_patch_vert <= 1) {
+  if(get_max_patch() <= 1) {
     cerr << "ERROR: incorrect max patch vertices number." << endl;
     exit(EXIT_FAILURE);
   }
+
   // retrieve the current size of framebuffer of a window
   glfwGetFramebufferSize(window, &window_width, &window_height);
   glViewport(0, 0, window_width, window_height);
@@ -200,7 +181,7 @@ static GLFWwindow* init ()
  * UP/DOWN/LEFT/RIGHT: move scene in XY coords
  *
  */
-static void handleKeyboard (GLFWwindow* window, ShaderUniformVars suv)
+static void handleKeyboard (GLFWwindow* window, Shader shader)
 {
   glfwPollEvents();
   // handle key controls for controlling tessellation factors
@@ -211,21 +192,21 @@ static void handleKeyboard (GLFWwindow* window, ShaderUniformVars suv)
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_O)) {
     if (!o_was_down) {
-      inner_tess_fac += 1.0f;
-      cout << "inner tess. factor = " << inner_tess_fac << endl;
+      tess_fac_inner += 1.0f;
+      cout << "inner tess. factor = " << tess_fac_inner << endl;
       o_was_down = true;
-      glUniform1f (suv.inner_tess_fac_loc, inner_tess_fac);
+      shader.setFloat("tess_fac_inner", tess_fac_inner);
     }
   } else {
     o_was_down = false;
   }
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_K)) {
-    if (!k_was_down && inner_tess_fac > 1.0f) {
-      inner_tess_fac -= 1.0f;
-      cout << "inner tess. factor = " << inner_tess_fac << endl;
+    if (!k_was_down && tess_fac_inner > 1.0f) {
+      tess_fac_inner -= 1.0f;
+      cout << "inner tess. factor = " << tess_fac_inner << endl;
       k_was_down = true;
-      glUniform1f (suv.inner_tess_fac_loc, inner_tess_fac);
+      shader.setFloat("tess_fac_inner", tess_fac_inner);
     }
   } else {
     k_was_down = false;
@@ -233,21 +214,21 @@ static void handleKeyboard (GLFWwindow* window, ShaderUniformVars suv)
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_P)) {
     if (!p_was_down) {
-      outer_tess_fac += 1.0f;
-      cout << "outer tess. factor = " << outer_tess_fac << endl;
+      tess_fac_outer += 1.0f;
+      cout << "outer tess. factor = " << tess_fac_outer << endl;
       p_was_down = true;
-      glUniform1f (suv.outer_tess_fac_loc, outer_tess_fac);
+      shader.setFloat("tess_fac_outer", tess_fac_outer);
     }
   } else {
     p_was_down = false;
   }
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_L)) {
-    if (!l_was_down && outer_tess_fac > 1.0f) {
-      outer_tess_fac -= 1.0f;
-      cout << "outer tess. factor = " << outer_tess_fac << endl;
+    if (!l_was_down && tess_fac_outer > 1.0f) {
+      tess_fac_outer -= 1.0f;
+      cout << "outer tess. factor = " << tess_fac_outer << endl;
       l_was_down = true;
-      glUniform1f (suv.outer_tess_fac_loc, outer_tess_fac);
+      shader.setFloat("tess_fac_outer", tess_fac_outer);
     }
   } else {
     l_was_down = false;
