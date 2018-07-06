@@ -6,6 +6,7 @@
 #define COLOR_H
 
 #include <string>
+#include <iostream>
 using namespace std;
 
 class Color {
@@ -22,14 +23,21 @@ public:
   }
   inline void set(string colorName) {
     if (colorName == "IndiaRed") set_IndiaRed();
-    if (colorName == "Coral")    set_Coral();
-    if (colorName == "Salmon")   set_Salmon();
-    if (colorName == "Orange")   set_Orange();
-    if (colorName == "Violet")   set_Violet();
-    if (colorName == "ForestGreen")  set_ForestGreen();
-    if (colorName == "SteelBlue")    set_SteelBlue();
-    if (colorName == "DogerBlue")    set_DogerBlue();
+    else if (colorName == "Coral")    set_Coral();
+    else if (colorName == "Salmon")   set_Salmon();
+    else if (colorName == "Orange")   set_Orange();
+    else if (colorName == "Violet")   set_Violet();
+    else if (colorName == "ForestGreen")  set_ForestGreen();
+    else if (colorName == "SteelBlue")    set_SteelBlue();
+    else if (colorName == "DogerBlue")    set_DogerBlue();
+    else {
+      // noit a predifined color name
+      cerr << "set color < "  << colorName << ">: ";
+      cerr << "this is not a predifined color. please choose from following color name: \n";
+      cout << "IndiaRed, Coral, Salmon, Orange, Violet, ForestGreen, SteelBlue, DogerBlue\n";
+    }
   }
+
   // predifined colors
   inline void set_IndiaRed() { r = 0.804; g = 0.361; b = 0.361; a = 1.0; }
   inline void set_Coral()    { r = 1.000; g = 0.498; b = 0.314; a = 1.0; }
