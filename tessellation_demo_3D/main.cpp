@@ -8,7 +8,7 @@ Author: Ying Zhang
 ==========
 Controller:
 Raise/Lower "inner" tessellation factor: O/K keys
-Raise/Lower "outter" tessellation factor: P/L keys
+Raise/Lower "outer" tessellation factor: P/L keys
 ***/
 
 #include <gl_yz.h>        // self-defined library
@@ -25,17 +25,18 @@ Raise/Lower "outter" tessellation factor: P/L keys
 using namespace glm;
 using namespace std;
 
+// struct for shader uniform variables
+struct ShaderUniformVars {
+  float tess_fac_inner;
+  float tess_fac_outer;
+};
+
 // define the original window size
 int window_width = 1280;
 int window_height = 720;
 
-// define the initial inner/outter tessellation factor
-static float tess_fac_inner = 1.0;
-static float tess_fac_outer = 1.0;
-
-
 static GLFWwindow* init();
-static void handleKeyboard(GLFWwindow* window, Shader shader);
+static void handleKeyboard(GLFWwindow* window, Shader shader, ShaderUniformVars& suv);
 
 
 // ======================= main ===========================
@@ -73,9 +74,13 @@ int main () {
                           "shader_tes.glsl",
                           NULL,
                           "shader_fs.glsl");
+  // init shader uniform variables
+  ShaderUniformVars suv;
+  suv.tess_fac_outer = 1.0;
+  suv.tess_fac_inner = 1.0;
   // set shader uniform variables
-  shader_programme.setFloat("tess_fac_outer", tess_fac_outer);
-  shader_programme.setFloat("tess_fac_inner", tess_fac_inner);
+  shader_programme.setFloat("tess_fac_outer", suv.tess_fac_outer);
+  shader_programme.setFloat("tess_fac_inner", suv.tess_fac_inner);
 
   glEnable (GL_CULL_FACE);
 	glCullFace (GL_BACK);
@@ -90,7 +95,7 @@ int main () {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // handle key controls as input
-    handleKeyboard(window, shader_programme);
+    handleKeyboard(window, shader_programme, suv);
 
     // use shader program
     shader_programme.use();
@@ -181,7 +186,7 @@ static GLFWwindow* init ()
  * UP/DOWN/LEFT/RIGHT: move scene in XY coords
  *
  */
-static void handleKeyboard (GLFWwindow* window, Shader shader)
+static void handleKeyboard (GLFWwindow* window, Shader shader, ShaderUniformVars& suv)
 {
   glfwPollEvents();
   // handle key controls for controlling tessellation factors
@@ -192,21 +197,21 @@ static void handleKeyboard (GLFWwindow* window, Shader shader)
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_O)) {
     if (!o_was_down) {
-      tess_fac_inner += 1.0f;
-      cout << "inner tess. factor = " << tess_fac_inner << endl;
+      suv.tess_fac_inner += 1.0f;
+      cout << "inner tess. factor = " << suv.tess_fac_inner << endl;
       o_was_down = true;
-      shader.setFloat("tess_fac_inner", tess_fac_inner);
+      shader.setFloat("tess_fac_inner", suv.tess_fac_inner);
     }
   } else {
     o_was_down = false;
   }
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_K)) {
-    if (!k_was_down && tess_fac_inner > 1.0f) {
-      tess_fac_inner -= 1.0f;
-      cout << "inner tess. factor = " << tess_fac_inner << endl;
+    if (!k_was_down && suv.tess_fac_inner > 1.0f) {
+      suv.tess_fac_inner -= 1.0f;
+      cout << "inner tess. factor = " << suv.tess_fac_inner << endl;
       k_was_down = true;
-      shader.setFloat("tess_fac_inner", tess_fac_inner);
+      shader.setFloat("tess_fac_inner", suv.tess_fac_inner);
     }
   } else {
     k_was_down = false;
@@ -214,21 +219,21 @@ static void handleKeyboard (GLFWwindow* window, Shader shader)
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_P)) {
     if (!p_was_down) {
-      tess_fac_outer += 1.0f;
-      cout << "outer tess. factor = " << tess_fac_outer << endl;
+      suv.tess_fac_outer += 1.0f;
+      cout << "outer tess. factor = " << suv.tess_fac_outer << endl;
       p_was_down = true;
-      shader.setFloat("tess_fac_outer", tess_fac_outer);
+      shader.setFloat("tess_fac_outer", suv.tess_fac_outer);
     }
   } else {
     p_was_down = false;
   }
 
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_L)) {
-    if (!l_was_down && tess_fac_outer > 1.0f) {
-      tess_fac_outer -= 1.0f;
-      cout << "outer tess. factor = " << tess_fac_outer << endl;
+    if (!l_was_down && suv.tess_fac_outer > 1.0f) {
+      suv.tess_fac_outer -= 1.0f;
+      cout << "outer tess. factor = " << suv.tess_fac_outer << endl;
       l_was_down = true;
-      shader.setFloat("tess_fac_outer", tess_fac_outer);
+      shader.setFloat("tess_fac_outer", suv.tess_fac_outer);
     }
   } else {
     l_was_down = false;
