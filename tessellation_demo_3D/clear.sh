@@ -10,12 +10,12 @@ if [ -e gl_utils.gcno ]; then
   rm  gl_utils.gcno
 fi
 
-if [ -e make_shaders.gcda ]; then
-  rm  make_shaders.gcda
+if [ -e Shader.gcda ]; then
+  rm  Shader.gcda
 fi
 
-if [ -e make_shaders.gcno ]; then
-  rm  make_shaders.gcno
+if [ -e Shader.gcno ]; then
+  rm  Shader.gcno
 fi
 
 if [ -e main.gcda ]; then
