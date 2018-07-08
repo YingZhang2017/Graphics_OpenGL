@@ -34,6 +34,15 @@ if [ -e Shape3D.gcno ]; then
   rm  Shape3D.gcno
 fi
 
+if [ -e Diamond.gcda ]; then
+  rm  Diamond.gcda
+fi
+
+if [ -e Diamond.gcno ]; then
+  rm  Diamond.gcno
+fi
+
+
 if [ -e tessellation_demo ]; then
   rm  tessellation_demo
 fi
