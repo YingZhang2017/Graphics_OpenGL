@@ -385,7 +385,7 @@ static GLuint GeneraterObjectVAO () {
 
     glBindBuffer(GL_ARRAY_BUFFER, tri_textCords_vbo);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
 
     return vao;
 }
