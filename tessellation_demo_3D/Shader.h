@@ -36,9 +36,16 @@ public:
   // set unfiform of different types <unfiorm var name in shader, value>
   void setInt(const char* name, int value);
   void setFloat(const char* name, float value);
+
   void setVec2 (const char* name, float x, float y);
+  void setVec2 (const char* name, const vec2 &value);
+
   void setVec3 (const char* name, float x, float y, float z);
+  void setVec3 (const char* name, const vec3 &value);
+
   void setVec4 (const char* name, float x, float y, float z, float w);
+  void setVec4 (const char* name, const vec4 &value);
+
   void setMat4 (const char* name, const mat4 &value);
 
 private:

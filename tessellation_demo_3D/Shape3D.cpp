@@ -13,10 +13,11 @@
 // position (0,0,0,), size (1,1,1), color: DogerBlue
 Shape3D::Shape3D() {
   // init TRS and modelMatrix
-  R = mat4();
-  S = mat4();
-  T = mat4();
-  modelMatrix = mat4();
+  R = mat4(1.0f);
+  S = mat4(1.0f);
+  T = mat4(1.0f);
+
+  modelMatrix = mat4(1.0);
 
   setLocation(0, 0, 0);
   setSize(1, 1, 1);
@@ -24,28 +25,20 @@ Shape3D::Shape3D() {
   setRotateY(0, 0);
   setRotateZ(0, 0);
   color.set_DogerBlue();
-
-  // vbo = new VBOInfo();
-
-  // shaderProgram must be set before redraw object
-  hasSetShader = false;
 }
 
 // ====== Destructor ==========
 Shape3D::~Shape3D(){}
 
-// ======= set shader program =====
-void Shape3D::setShaderProgram(GLuint sp) {
-  shaderProgram = sp;
-  hasSetShader = true;
+// get modelMatrix after transformed
+mat4 Shape3D::getModelMatrix() {
+  modelMatrix = modelMatrix * T * R * S;
+  return modelMatrix;
 }
 
-// ======= check shader program =====
-void Shape3D::checkShaderProgram() {
-  if (!hasSetShader) {
-    cerr << "ERROR: shader program not set when redraw program\n";
-    return;
-  }
+// ======= set shader program =====
+void Shape3D::setShaderProgram(Shader* sp) {
+  shaderProgram = sp;
 }
 
 // ======= set object location ========
@@ -94,82 +87,16 @@ void Shape3D::setColor(Color c) {
   color = c;
 }
 
-// ==========================
-// ====== redraw method =====
-void Shape3D::redrawObject() {
-  // check shader program
-  checkShaderProgram();
-  // specify current matrix as model view matrix
-  glMatrixMode(GL_MODELVIEW);
-  // push and duplicate the the current matrix in matrix stack to make it on top
-  glPushMatrix();
-  // update the uniform veariables to the shader program
-  sendUniformToShader();
-  // redraw shader program
-  redrawGLSL(); // this is a pure virtual function in Shape3D
-  // specify current matrix as model view matrix
-  glMatrixMode(GL_MODELVIEW);
-  // pop the current matrix in stack
-  glPopMatrix();
+void Shape3D::setColor(string colorName) {
+  color.set(colorName);
 }
 
-
-
-// ===== protected methods ==========
-// ===== set uniform variables to shader program
-void Shape3D::sendUniformToShader() {
-    // get MVP matrix and send to shader proigram to do transformation
-    // first get current modelMatrix
-    float pXmv[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, pXmv);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    glMultMatrixf(pXmv);
-    glGetFloatv( GL_PROJECTION_MATRIX, pXmv);
-    glPopMatrix();
-
-    mat4 tmpPxmv;
-    for(int i = 0; i < 4; i++) {
-      for(int j = 0; j < 4; j++) {
-        tmpPxmv[i][j] = pXmv[j*4+i];
-      }
-    }
-    tmpPxmv = tmpPxmv * modelMatrix * T * R * S;
-
-    for(int i = 0; i < 4; i++){
-  		for(int j =0; j < 4; j++)
-  			pXmv[j*4+i] = tmpPxmv[i][j];
-  	}
-    glMatrixMode( GL_MODELVIEW );
-
-    int matLoc = glGetUniformLocation( shaderProgram, "MVPMatrix" );
-  	glUniformMatrix4fv( matLoc, 1, false, pXmv );
-
-    // later also need to get tessellation uniform to shaderr program to do tessellation
+// ====== create vbo and vao =======
+void Shape3D::createBuffer() {
+  cerr << "ERROR: Shape3D createBuffer() is called. It must be implemented in derived class." << '\n';
 }
 
-
-// ====== createVBO=====
-// index: 0: verts, 1: colors
-GLuint Shape3D::createVBO(float* coords, int size, int index)
-{
-    // set
-    vbo.vboBytes = sizeof(coords);
-    vbo.vboSize = size;
-
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData( GL_ARRAY_BUFFER, sizeof(coords), coords, GL_STATIC_DRAW);
-    // set in paramters in shaderProgram
-    glEnableVertexAttribArray(index);
-    glVertexAttribPointer(index , 4, GL_FLOAT, GL_FALSE,0, (GLvoid*) 0 );
-
-    glBindBuffer( GL_ARRAY_BUFFER, 0 );  // unbind this buffer
-    return vbo;
-}
-
-// ====== redraw GLSL=====
-void Shape3D::redrawGLSL() {
-  cerr << "ERROR: Shape3D redrawGLSL() is called. It must be implemented in derived class." << '\n';
+// ====== draw of object =======
+void Shape3D::draw() {
+  cerr << "ERROR: Shape3D draw() is called. It must be implemented in derived class." << '\n';
 }
