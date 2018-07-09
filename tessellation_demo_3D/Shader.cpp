@@ -101,16 +101,33 @@ void Shader::setVec2 (const char* name, float x, float y)
   glUniform2f(loc, x, y);
 }
 
+void Shader::setVec2 (const char* name, const vec2& value)
+{
+  int loc = glGetUniformLocation(shaderProgramID, name);
+  glUniform2f(loc, value.x, value.y);
+}
+
 void Shader::setVec3 (const char* name, float x, float y, float z)
 {
   int loc = glGetUniformLocation(shaderProgramID, name);
   glUniform3f(loc, x, y, z);
 }
 
+void Shader::setVec3 (const char* name, const vec3& value)
+{
+  int loc = glGetUniformLocation(shaderProgramID, name);
+  glUniform3f(loc, value.x, value.y, value.z);
+}
+
 void Shader::setVec4 (const char* name, float x, float y, float z, float w)
 {
   int loc = glGetUniformLocation(shaderProgramID, name);
   glUniform4f(loc, x, y, z, w);
+}
+
+void Shader::setVec4 (const char* name, const vec4& value) {
+  int loc = glGetUniformLocation(shaderProgramID, name);
+  glUniform4f(loc, value.x, value.y, value.z, value.w);
 }
 
 void Shader::setMat4 (const char* name, const mat4 &value)
