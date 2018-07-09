@@ -41,6 +41,15 @@ void Shape3D::setShaderProgram(Shader* sp) {
   shaderProgram = sp;
 }
 
+// ======== translate ==========
+void Shape3D::translateObject(float x, float y, float z) {
+    xLoc += x;
+    yLoc += y;
+    zLoc += z;
+
+    T = translate(T, vec3(xLoc, yLoc, zLoc));
+}
+
 // ======= set object location ========
 void Shape3D::setLocation(float x, float y, float z) {
   xLoc = x;

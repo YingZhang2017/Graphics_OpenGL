@@ -34,12 +34,12 @@ if [ -e Shape3D.gcno ]; then
   rm  Shape3D.gcno
 fi
 
-if [ -e Diamond.gcda ]; then
-  rm  Diamond.gcda
+if [ -e Cube.gcda ]; then
+  rm  Cube.gcda
 fi
 
-if [ -e Diamond.gcno ]; then
-  rm  Diamond.gcno
+if [ -e Cube.gcno ]; then
+  rm  Cube.gcno
 fi
 
 

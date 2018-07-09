@@ -15,7 +15,7 @@ Raise/Lower "outer" tessellation factor: P/L keys
 #include "gl_utils.h"     // helper functions for check info/error
 
 #include "Shader.h"       // Shader class for shader program
-#include "Shape3D.h"
+#include "Cube.h"
 #include "Color.h"
 
 #include <iostream>
@@ -27,9 +27,33 @@ using namespace std;
 
 // struct for shader uniform variables
 struct ShaderUniformVars {
+  // tessellation
   float tess_fac_inner;
   float tess_fac_outer;
+  // transformation matrix
+  mat4 modelMatrix;
+  mat4 viewMatrix;
+  mat4 projectionMatrix;
+
+  vec3 camera_position;
+  vec3 view_position;
+  vec3 head_up;
+
+  float view_angle;
+  float aspec_ratio;
+  float near;
+  float far;
+
+  // lighting
+  vec3 light_position;
+  vec3 light_color;
+  vec3 diffuse_material;
+  vec3 ambient_material;
+  vec3 object_color;
 };
+
+// test
+static Cube* d1;
 
 // define the original window size
 int window_width = 1280;
@@ -38,56 +62,76 @@ int window_height = 720;
 static GLFWwindow* init();
 static void handleKeyboard(GLFWwindow* window, Shader shader, ShaderUniformVars& suv);
 
-
 // ======================= main ===========================
 int main () {
   // init glfw, glew, create window
   GLFWwindow* window = init();
 
-  //=========================
-  // set triangle coordinates
-  GLfloat tri_points [] = {
-    0.0f, 0.8f, 0.0f,
-    0.4f, 0.0f, 0.0f,
-    -0.4f, 0.0f, 0.0f
-  };
-
-  int nVertices = sizeof(tri_points)/sizeof(GLfloat)/3;
-
-  // create and active vao
-  GLuint vao;
-  glGenVertexArrays(1, &vao);
-  glBindVertexArray(vao);
-
-  // create and active vbo
-  GLuint tri_points_vbo;
-  glGenBuffers(1, &tri_points_vbo);
-  glBindBuffer(GL_ARRAY_BUFFER, tri_points_vbo);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(tri_points), tri_points, GL_STATIC_DRAW);
-
-  glEnableVertexAttribArray(0); // index of vao. if only 1, use 0
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
   // create shader program
+
   Shader shader_programme("shader_vs.glsl",
                           "shader_tcs.glsl",
                           "shader_tes.glsl",
                           NULL,
                           "shader_fs.glsl");
+  /*
+  Shader shader_programme("shader_vs_light.glsl",
+                           NULL, NULL, NULL,
+                          "shader_fs_light.glsl");
+  */
+  // ----------------------------------------
+  // create object
+  d1 = new Cube("SteelBlue");
+  d1->setRotateX(45.0, 0.2);
+  // set shader program for the object
+  d1->setShaderProgram(&shader_programme);
+
+  //----------------------------------------
   // init shader uniform variables
   ShaderUniformVars suv;
   suv.tess_fac_outer = 1.0;
   suv.tess_fac_inner = 1.0;
+
+  suv.view_angle = 45.0f;
+  suv.aspec_ratio = (float)window_width / (float)window_height;
+  suv.near = 1.0f;
+  suv.far = 100.f;
+  suv.camera_position = vec3(0.0f, 0.0f, 3.0f);
+  suv.view_position = vec3(0.0f, 0.0f, 0.0f);
+  suv.head_up = vec3(0.0f, 1.0f, 0.0f);
+
+  suv.modelMatrix = d1->getModelMatrix();
+  suv.viewMatrix = lookAt(suv.camera_position, suv.view_position,  suv.head_up);
+  suv.projectionMatrix = perspective(suv.view_angle,
+                                     suv.aspec_ratio,
+                                     suv.near,
+                                     suv.far);
+  suv.light_position = vec3(1.2f, 1.0f, 2.0f);
+  suv.light_color = vec3(1.0f, 1.0f, 1.0f);
+  Color c = d1->getColor();
+  suv.object_color = vec3(c.r, c.g, c.b);
+
+  // set shader uniforms
+  // be sure to activate shader when setting uniforms/drawing objects
+  shader_programme.use();
+
   // set shader uniform variables
   shader_programme.setFloat("tess_fac_outer", suv.tess_fac_outer);
   shader_programme.setFloat("tess_fac_inner", suv.tess_fac_inner);
+  shader_programme.setMat4("modelMatrix", suv.modelMatrix);
+  shader_programme.setMat4("projectionMatrix", suv.projectionMatrix);
+  shader_programme.setMat4("viewMatrix", suv.viewMatrix);
 
-  glEnable (GL_CULL_FACE);
-	glCullFace (GL_BACK);
-	glFrontFace (GL_CW);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	glPatchParameteri (GL_PATCH_VERTICES, 3);
+  shader_programme.setVec3("light_position", suv.light_position);
+  shader_programme.setVec3("view_position", suv.view_position);
+  shader_programme.setVec3("light_color", suv.light_color);
+  shader_programme.setVec3("object_color", suv.object_color);
+  // ----------------------------------------
 
+  // switch between draw line and surface
+  glEnable(GL_DEPTH_TEST);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glPatchParameteri (GL_PATCH_VERTICES, 3);
 
   // start loop
   while (!glfwWindowShouldClose(window)) {
@@ -99,10 +143,8 @@ int main () {
 
     // use shader program
     shader_programme.use();
-
-    // draw triangle
-    glBindVertexArray(vao);
-    glDrawArrays(GL_PATCHES, 0, nVertices);
+    // draw object
+    d1->draw();
 
     // display buffer stuff on screen
     glfwSwapBuffers(window);
@@ -186,9 +228,12 @@ static GLFWwindow* init ()
  * UP/DOWN/LEFT/RIGHT: move scene in XY coords
  *
  */
-static void handleKeyboard (GLFWwindow* window, Shader shader, ShaderUniformVars& suv)
+static void handleKeyboard (GLFWwindow* window,
+                            Shader shader,
+                            ShaderUniformVars& suv)
 {
   glfwPollEvents();
+
   // handle key controls for controlling tessellation factors
   static bool o_was_down = false;
   static bool k_was_down = false;
@@ -238,4 +283,105 @@ static void handleKeyboard (GLFWwindow* window, Shader shader, ShaderUniformVars
   } else {
     l_was_down = false;
   }
+
+
+  // move obj by key left/right, up/down
+  static bool up_was_down = false;
+  static bool down_was_down = false;
+  static bool left_was_down = false;
+  static bool right_was_down = false;
+
+  if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_LEFT)) {
+    if (!left_was_down) {
+      left_was_down = true;
+      suv.modelMatrix[3].x -= 0.1;
+      shader.setMat4("modelMatrix", suv.modelMatrix);
+    }
+  } else {
+    left_was_down = false;
+  }
+
+  if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_RIGHT)) {
+    if (!right_was_down) {
+      right_was_down = true;
+      suv.modelMatrix[3].x += 0.1;
+      shader.setMat4("modelMatrix", suv.modelMatrix);
+    }
+  } else {
+    right_was_down = false;
+  }
+
+  if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_UP)) {
+    if (!up_was_down) {
+      up_was_down = true;
+      suv.modelMatrix[3].y += 0.1;
+      shader.setMat4("modelMatrix", suv.modelMatrix);
+    }
+  } else {
+    up_was_down = false;
+  }
+
+  if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_DOWN)) {
+    if (!down_was_down) {
+      down_was_down = true;
+      suv.modelMatrix[3].y -= 0.1;
+      shader.setMat4("modelMatrix", suv.modelMatrix);
+    }
+  } else {
+    down_was_down = false;
+  }
+
+    // move obj in z directeion and control in/out tess factor by keyborad A/Z
+    static bool a_was_down = false;
+    static bool z_was_down = false;
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_A)) {
+      if (!a_was_down) {
+        a_was_down = true;
+        suv.modelMatrix[3].z += 0.1;
+        shader.setMat4("modelMatrix", suv.modelMatrix);
+
+        suv.tess_fac_inner += 1.0;
+        suv.tess_fac_outer += 1.0;
+        shader.setFloat("tess_fac_inner", suv.tess_fac_inner);
+        shader.setFloat("tess_fac_outer", suv.tess_fac_outer);
+        cout << "inner tess = " << suv.tess_fac_inner << ", outer tess = " << suv.tess_fac_outer << endl;
+      }
+    } else {
+      a_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_Z)) {
+      if (!z_was_down) {
+        z_was_down = true;
+        suv.modelMatrix[3].z -= 0.1;
+        shader.setMat4("modelMatrix", suv.modelMatrix);
+
+        suv.tess_fac_inner = suv.tess_fac_inner > 1.0 ? suv.tess_fac_inner - 1.0 : 1.0;
+        suv.tess_fac_outer = suv.tess_fac_outer > 1.0 ? suv.tess_fac_outer - 1.0: 1.0;
+        shader.setFloat("tess_fac_inner", suv.tess_fac_inner);
+        shader.setFloat("tess_fac_outer", suv.tess_fac_outer);
+        cout << "inner tess = " << suv.tess_fac_inner << ", outer tess = " << suv.tess_fac_outer << endl;
+      }
+    } else {
+      z_was_down = false;
+    }
+
+    // use w, e, r to set rotateion for x, y, z axis
+    static bool w_was_down = false;
+    //static bool e_was_down = false;
+    //static bool r_was_down = false;
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_W)) {
+      if (!w_was_down) {
+        w_was_down = true;
+        // suv.modelMatrix[3].z += 0.1;
+
+
+        // shader.setMat4("modelMatrix", suv.modelMatrix);
+        cout << "rotate by x axis" << endl;
+      }
+    } else {
+      w_was_down = false;
+    }
 }

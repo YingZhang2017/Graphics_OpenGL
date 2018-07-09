@@ -1,13 +1,20 @@
 #version 410
 
-layout(location = 0) in vec3 vPositions;
-layout(location = 1) in vec3 vColors;
+layout(location = 0) in vec3 vertex_position;
+layout(location = 1) in vec3 vertex_normal;
 
-uniform mat4 MVP;
-out vec4 ctr_point_out;
-
+out vec3 v_position;
+out vec3 v_normal;
+// uniform mat4 modelMatrix, viewMatrix, projectionMatrix;
 
 void main() {
-	ctr_point_out = vec4(vPositions, 1);
-	// ctr_point_out = MVP * vec4(vPositions, 1);
+	/*
+	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vertex_position, 1.0f);
+	v_position = vec3(modelMatrix * vec4(vertex_position, 1.0f));
+	v_normal = mat3(transpose(inverse(modelMatrix))) * vertex_normal;
+	*/
+
+	
+	v_position = vertex_position;
+	v_normal = vertex_normal;
 }

@@ -10,17 +10,10 @@
 
 #include <gl_yz.h>
 #include "Color.h"
+#include "Shader.h"
 #include <iostream>
 
 using namespace glm;
-
-struct VBOInfo {
-  // vbo buffer id for this object
-  GLuint vertId;      // 0: vertices buffer id
-  GLuint colorId;     // 1: colors buffer id
-  int    vboBytes;    // size of vbo buffer in bytes
-  int    vboSize;     // number of vertices/colors/etc... in vbo buffer
-};
 
 class Shape3D {
 protected:
@@ -29,33 +22,40 @@ protected:
   float xSize, ySize, zSize;        // original size of object(scale)
   float angle, dxRot, dyRot, dzRot; // original rotation angle and axis(rotate)
   Color color;                      // original color
+
   // matrix fotr translation, rotation and scalation
   mat4 T, R, S;
+
   // model matrix
   mat4 modelMatrix;
 
   // shader program name used for object
-  GLuint shaderProgram;
-  bool hasSetShader;
+  Shader* shaderProgram;
 
   // VBO information
-  VBOInfo vbo;
+  GLuint vboId_vert;
+  GLuint vboId_normal;
+  int vboBytes;    // size of vbo buffer in bytes
+  int vboSize;     // number of vertices/colors/etc... in vbo buffer
   // vao id
   GLuint vaoId;
 
-  // for redrawObject() steps
-  virtual void sendUniformToShader();
-  virtual GLuint createVBO(float* coords, int size, int index);
-  virtual void redrawGLSL() = 0;
 
 public:
   Shape3D();
   virtual ~Shape3D();
 
+  // retrun transformed model matrix
+  mat4 getModelMatrix();
+
+  // return color
+  inline Color getColor() { return color; }
+
   // set shader program for object
-  void setShaderProgram(GLuint sp);
-  // check shader program is set already
-  void checkShaderProgram();
+  void setShaderProgram(Shader* sp);
+  // translate
+  void translateObject(float x, float y, float z);
+
   // set object location
   void setLocation(float x, float y, float z);
   // set object size
@@ -65,10 +65,12 @@ public:
   void setRotateY(float an, float dy);
   void setRotateZ(float an, float dz);
   // set colort for object
+  void setColor(string colorName);
   void setColor(Color c);
   void setColor(float r, float g, float b, float a = 1.0);
 
-  virtual void redrawObject();
+  virtual void createBuffer() = 0;
+  virtual void draw() = 0;
 };
 
 #endif
