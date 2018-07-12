@@ -48,17 +48,19 @@
 
  // ========== draw scene =================
  void Scene::drawScene() {
-   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
    for (int i = 0; i < objects.size(); i++) {
      objects[i]->draw();
    }
+   glFlush();    // send all output to display 
+
  }
 
  // set unifrom variables
  // =========== set tess factors ===============
  void Scene::setTessFactors(float inner, float outer) {
-    suv.tess_fac_inner = inner;
-    suv.tess_fac_outer = outer;
+    suv.tess_fac_inner = inner > 1.0 ? inner : 1.0;
+    suv.tess_fac_outer = outer > 1.0 ? outer : 1.0;
 
     if (!shaders.empty()) {
       sendTessFactorToShaders();
@@ -123,8 +125,12 @@
 
   // ====== scence tessellation =========
   void Scene::sceneTessllate(float inner_offset, float outer_offset) {
-    setTessFactors(suv.tess_fac_inner + inner_offset,
-                   suv.tess_fac_outer + outer_offset);
+
+    float in = suv.tess_fac_inner + inner_offset;
+    float out = suv.tess_fac_outer + outer_offset;
+    in = in > 1.0 ? in : 1.0;
+    out = out > 1.0 ? out : 1.0;
+    setTessFactors(in, out);
   }
 
 
