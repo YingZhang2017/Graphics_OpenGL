@@ -4,8 +4,8 @@
  * Ying Zhang, Jul 2018
  */
 
- #ifndef Cube_H_
- #define Cube_H_
+ #ifndef CUBE_H_
+ #define CUBE_H_
 
  #include "Shape3D.h"
  #include <iostream>

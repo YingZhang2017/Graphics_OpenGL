@@ -25,10 +25,6 @@ protected:
 
   // matrix fotr translation, rotation and scalation
   mat4 T, R, S;
-
-  // model matrix
-  mat4 modelMatrix;
-
   // shader program name used for object
   Shader* shaderProgram;
 
@@ -40,6 +36,9 @@ protected:
   // vao id
   GLuint vaoId;
 
+  // shader unifroms
+  mat4 modelMatrix;
+  vec3 object_color;
 
 public:
   Shape3D();
@@ -50,20 +49,22 @@ public:
 
   // return color
   inline Color getColor() { return color; }
+  // return position
+  inline vec3 getLocation() { return vec3(xLoc, yLoc, zLoc); }
+
+  // send shader uniform to shader
+  void sendUniformToShader();
+  void sendObjectCorlorToShader();
+  void sendModelMatrixToShader();
 
   // set shader program for object
   void setShaderProgram(Shader* sp);
-  // translate
-  void translateObject(float x, float y, float z);
-
   // set object location
   void setLocation(float x, float y, float z);
   // set object size
   void setSize(float x, float y, float z);
   // set rotation
-  void setRotateX(float an, float dx);
-  void setRotateY(float an, float dy);
-  void setRotateZ(float an, float dz);
+  void setRotate( float angle, float dx, float dy, float dz );
   // set colort for object
   void setColor(string colorName);
   void setColor(Color c);

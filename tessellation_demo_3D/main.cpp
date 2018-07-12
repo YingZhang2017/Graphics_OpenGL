@@ -18,6 +18,8 @@ Raise/Lower "outer" tessellation factor: P/L keys
 #include "Cube.h"
 #include "Color.h"
 
+#include "Scene.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -74,15 +76,11 @@ int main () {
                           "shader_tes.glsl",
                           NULL,
                           "shader_fs.glsl");
-  /*
-  Shader shader_programme("shader_vs_light.glsl",
-                           NULL, NULL, NULL,
-                          "shader_fs_light.glsl");
-  */
+
   // ----------------------------------------
   // create object
-  d1 = new Cube("SteelBlue");
-  d1->setRotateX(45.0, 0.2);
+  d1 = new Cube("Coral");
+  d1->setSize(2, 2, 2);
   // set shader program for the object
   d1->setShaderProgram(&shader_programme);
 
@@ -96,7 +94,7 @@ int main () {
   suv.aspec_ratio = (float)window_width / (float)window_height;
   suv.near = 1.0f;
   suv.far = 100.f;
-  suv.camera_position = vec3(0.0f, 0.0f, 3.0f);
+  suv.camera_position = vec3(0.0f, 0.0f, 10.0f);
   suv.view_position = vec3(0.0f, 0.0f, 0.0f);
   suv.head_up = vec3(0.0f, 1.0f, 0.0f);
 
@@ -119,6 +117,7 @@ int main () {
   shader_programme.setFloat("tess_fac_outer", suv.tess_fac_outer);
   shader_programme.setFloat("tess_fac_inner", suv.tess_fac_inner);
   shader_programme.setMat4("modelMatrix", suv.modelMatrix);
+
   shader_programme.setMat4("projectionMatrix", suv.projectionMatrix);
   shader_programme.setMat4("viewMatrix", suv.viewMatrix);
 
@@ -294,7 +293,9 @@ static void handleKeyboard (GLFWwindow* window,
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_LEFT)) {
     if (!left_was_down) {
       left_was_down = true;
-      suv.modelMatrix[3].x -= 0.1;
+      vec3 loc = d1->getLocation();
+      d1->setLocation(loc.x - 0.1, loc.y, loc.z);
+      suv.modelMatrix = d1->getModelMatrix();
       shader.setMat4("modelMatrix", suv.modelMatrix);
     }
   } else {
@@ -304,7 +305,9 @@ static void handleKeyboard (GLFWwindow* window,
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_RIGHT)) {
     if (!right_was_down) {
       right_was_down = true;
-      suv.modelMatrix[3].x += 0.1;
+      vec3 loc = d1->getLocation();
+      d1->setLocation(loc.x + 0.1, loc.y, loc.z);
+      suv.modelMatrix = d1->getModelMatrix();
       shader.setMat4("modelMatrix", suv.modelMatrix);
     }
   } else {
@@ -314,7 +317,9 @@ static void handleKeyboard (GLFWwindow* window,
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_UP)) {
     if (!up_was_down) {
       up_was_down = true;
-      suv.modelMatrix[3].y += 0.1;
+      vec3 loc = d1->getLocation();
+      d1->setLocation(loc.x, loc.y + 0.1, loc.z);
+      suv.modelMatrix = d1->getModelMatrix();
       shader.setMat4("modelMatrix", suv.modelMatrix);
     }
   } else {
@@ -324,7 +329,9 @@ static void handleKeyboard (GLFWwindow* window,
   if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_DOWN)) {
     if (!down_was_down) {
       down_was_down = true;
-      suv.modelMatrix[3].y -= 0.1;
+      vec3 loc = d1->getLocation();
+      d1->setLocation(loc.x, loc.y - 0.1, loc.z);
+      suv.modelMatrix = d1->getModelMatrix();
       shader.setMat4("modelMatrix", suv.modelMatrix);
     }
   } else {
@@ -338,7 +345,9 @@ static void handleKeyboard (GLFWwindow* window,
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_A)) {
       if (!a_was_down) {
         a_was_down = true;
-        suv.modelMatrix[3].z += 0.1;
+        vec3 loc = d1->getLocation();
+        d1->setLocation(loc.x, loc.y, loc.z + 0.1);
+        suv.modelMatrix = d1->getModelMatrix();
         shader.setMat4("modelMatrix", suv.modelMatrix);
 
         suv.tess_fac_inner += 1.0;
@@ -354,7 +363,9 @@ static void handleKeyboard (GLFWwindow* window,
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_Z)) {
       if (!z_was_down) {
         z_was_down = true;
-        suv.modelMatrix[3].z -= 0.1;
+        vec3 loc = d1->getLocation();
+        d1->setLocation(loc.x, loc.y, loc.z - 0.1);
+        suv.modelMatrix = d1->getModelMatrix();
         shader.setMat4("modelMatrix", suv.modelMatrix);
 
         suv.tess_fac_inner = suv.tess_fac_inner > 1.0 ? suv.tess_fac_inner - 1.0 : 1.0;
@@ -369,19 +380,42 @@ static void handleKeyboard (GLFWwindow* window,
 
     // use w, e, r to set rotateion for x, y, z axis
     static bool w_was_down = false;
-    //static bool e_was_down = false;
-    //static bool r_was_down = false;
+    static bool e_was_down = false;
+    static bool r_was_down = false;
 
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_W)) {
       if (!w_was_down) {
         w_was_down = true;
-        // suv.modelMatrix[3].z += 0.1;
-
-
-        // shader.setMat4("modelMatrix", suv.modelMatrix);
-        cout << "rotate by x axis" << endl;
+        d1->setRotate(25, 1, 0, 0);
+        suv.modelMatrix = d1->getModelMatrix();
+        shader.setMat4("modelMatrix", suv.modelMatrix);
+        cout << "rotate by x axis for 25 degree" << endl;
       }
     } else {
       w_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_E)) {
+      if (!e_was_down) {
+        e_was_down = true;
+        d1->setRotate(25, 0, 1, 0);
+        suv.modelMatrix = d1->getModelMatrix();
+        shader.setMat4("modelMatrix", suv.modelMatrix);
+        cout << "rotate by y axis for 25 degree" << endl;
+      }
+    } else {
+      e_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_R)) {
+      if (!r_was_down) {
+        r_was_down = true;
+        d1->setRotate(25, 0, 0, 1);
+        suv.modelMatrix = d1->getModelMatrix();
+        shader.setMat4("modelMatrix", suv.modelMatrix);
+        cout << "rotate by z axis for 25 degree" << endl;
+      }
+    } else {
+      r_was_down = false;
     }
 }

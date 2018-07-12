@@ -13,7 +13,6 @@ void main() {
 	v_position = vec3(modelMatrix * vec4(vertex_position, 1.0f));
 	v_normal = mat3(transpose(inverse(modelMatrix))) * vertex_normal;
 	*/
-
 	
 	v_position = vertex_position;
 	v_normal = vertex_normal;

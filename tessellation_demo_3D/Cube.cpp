@@ -150,6 +150,13 @@
 
  // ==== draw object ======
  void Cube::draw() {
+   // use shader program
+   shaderProgram->use();
+   // send modelmatrix and object color to shaderProgram
+   sendUniformToShader();
+   // bind vao
    glBindVertexArray(vaoId);
+   // draw as tessellation patch
+   // glDrawArrays(GL_TRIANGLES, 0, nVertices);
    glDrawArrays(GL_PATCHES, 0, nVertices);
  }

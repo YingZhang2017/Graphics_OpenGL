@@ -2,6 +2,8 @@
 
 in vec3 position_eye;
 in vec3 normal_eye;
+in vec3 colour;
+
 
 uniform vec3 object_color;
 uniform vec3 light_color;
@@ -15,12 +17,12 @@ out vec4 fragment_colour;
 void main () {
 
 	// --------
-	fragment_colour = vec4(object_color, 1.0);
+	//fragment_colour = vec4(colour, 1.0);
+
 
 	//---------
-	/*
 	// ambient
-	float ambient_strength = 0.1f;
+	float ambient_strength = 0.5f;
 	vec3 ambient = ambient_strength * light_color;
 
 	// diffuse
@@ -38,6 +40,5 @@ void main () {
 
 	vec3 final = (ambient + diffuse + specular) * object_color;
 	fragment_colour = vec4(final, 1.0);
-	*/
 
 }

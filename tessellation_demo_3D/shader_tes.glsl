@@ -6,6 +6,7 @@ in vec3 tc_normal[];
 
 out vec3 position_eye;	// frag position
 out vec3 normal_eye;   // normal
+out vec3 colour;
 
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
@@ -17,8 +18,17 @@ void main () {
 	vec3 p1 = gl_TessCoord.y * tc_position[1];
 	vec3 p2 = gl_TessCoord.z * tc_position[2];
 	vec3 pos = p0 + p1 + p2;
-
+	// vec3 pos = normalize(p0 + p1 + p2);
 	position_eye = vec3 (viewMatrix * modelMatrix * vec4 (pos, 1.0));
-	normal_eye = vec3 (viewMatrix * modelMatrix * vec4(0.0, 0.0, 1.0, 0.0));
-	gl_Position = projectionMatrix * vec4(position_eye, 1.0);
+
+	vec3 n0 = gl_TessCoord.x * tc_normal[0];
+	vec3 n1 = gl_TessCoord.y * tc_normal[1];
+	vec3 n2 = gl_TessCoord.z * tc_normal[2];
+	vec3 nor = n0 + n1 + n2;
+	normal_eye = vec3 (viewMatrix * modelMatrix * vec4(nor, 0.0));
+  // normal_eye = normalize(normal_eye);
+
+	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
+
+	colour.rbg = gl_TessCoord.xyz;
 }

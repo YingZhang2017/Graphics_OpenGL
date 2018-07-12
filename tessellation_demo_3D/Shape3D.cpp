@@ -8,6 +8,7 @@
 #include "Shape3D.h"
 #include "Color.h"
 
+
 // ====== Constructor ========
 // create a new Shape3D object
 // position (0,0,0,), size (1,1,1), color: DogerBlue
@@ -21,10 +22,11 @@ Shape3D::Shape3D() {
 
   setLocation(0, 0, 0);
   setSize(1, 1, 1);
-  setRotateX(0, 0);
-  setRotateY(0, 0);
-  setRotateZ(0, 0);
+  setRotate( 0, 0, 0, 1);
   color.set_DogerBlue();
+
+  // init shader program point as NULL
+  shaderProgram = NULL;
 }
 
 // ====== Destructor ==========
@@ -32,7 +34,7 @@ Shape3D::~Shape3D(){}
 
 // get modelMatrix after transformed
 mat4 Shape3D::getModelMatrix() {
-  modelMatrix = modelMatrix * T * R * S;
+  modelMatrix = T * R * S;
   return modelMatrix;
 }
 
@@ -41,13 +43,38 @@ void Shape3D::setShaderProgram(Shader* sp) {
   shaderProgram = sp;
 }
 
-// ======== translate ==========
-void Shape3D::translateObject(float x, float y, float z) {
-    xLoc += x;
-    yLoc += y;
-    zLoc += z;
+// ======= send shader uniform ro bound shader ====
+void Shape3D::sendUniformToShader() {
+  // check shader program set or not;
+  if (!shaderProgram) {
+    cerr << "ERROR: Shape3D object not bind shader program and cannot send uniform vars\n";
+    exit(EXIT_FAILURE);
+  }
+  shaderProgram->use();
+  // send modelMatrix and object_color;
+  shaderProgram->setMat4("modelMatrix", getModelMatrix());
+  shaderProgram->setVec3("object_color", vec3(color.r, color.g, color.b));
+}
 
-    T = translate(T, vec3(xLoc, yLoc, zLoc));
+
+void Shape3D::sendObjectCorlorToShader() {
+  // check shader program set or not;
+  if (!shaderProgram) {
+    cerr << "ERROR: Shape3D object not bind shader program and cannot send uniform vars\n";
+    exit(EXIT_FAILURE);
+  }
+  shaderProgram->use();
+  shaderProgram->setVec3("object_color", vec3(color.r, color.g, color.b));
+}
+
+void Shape3D::sendModelMatrixToShader() {
+  // check shader program set or not;
+  if (!shaderProgram) {
+    cerr << "ERROR: Shape3D object not bind shader program and cannot send uniform vars\n";
+    exit(EXIT_FAILURE);
+  }
+  shaderProgram->use();
+  shaderProgram->setMat4("modelMatrix", getModelMatrix());
 }
 
 // ======= set object location ========
@@ -55,7 +82,7 @@ void Shape3D::setLocation(float x, float y, float z) {
   xLoc = x;
   yLoc = y;
   zLoc = z;
-  T = translate(T, vec3(x, y, z));
+  T = translate(mat4(1.0f), vec3(x, y, z));
 }
 
 // ======= set object size =======
@@ -63,28 +90,19 @@ void Shape3D::setSize(float x, float y, float z) {
   xSize = x;
   ySize = y;
   zSize = z;
-  S = scale(S, vec3(x, y, z));
+  S = scale(mat4(1.0f), vec3(x, y, z));
 }
 
-// ======= set rotation X =======
-void Shape3D::setRotateX(float an, float dx) {
-  angle = an;
-  dxRot = dx;
-  R = rotate(angle, vec3(1, 0, 0));
-}
+// ==========  setRotate ==============
+// set the rotation parameters: angle, and axis specification
+void Shape3D::setRotate( float a, float dx, float dy, float dz )
+{
+    angle = a;
+    dxRot = dx;
+    dyRot = dy;
+    dzRot = dz;
 
-// ======= set rotation Y =======
-void Shape3D::setRotateY(float an, float dy) {
-  angle = an;
-  dyRot = dy;
-  R = rotate(angle, vec3(0, 1, 0));
-}
-
-// ======= set rotation Z =======
-void Shape3D::setRotateZ(float an, float dz) {
-  angle = an;
-  dzRot = dz;
-  R = rotate(angle, vec3(0, 0, 1));
+    R = rotate(R, a, vec3(dx, dy, dz));
 }
 
 // ===== set colort for object =======
