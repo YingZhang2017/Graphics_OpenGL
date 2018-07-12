@@ -57,10 +57,12 @@ public:
   void sceneTranslate(float x_offset, float y_offset, float z_offset);
   void sceneTessllate(float inner_offset, float outer_offset);
 
+  // uniform vars
+  SecneShaderUniformVars suv;
+
 protected:
   vector<Shape3D*> objects;
   vector<Shader*> shaders;
-  SecneShaderUniformVars suv;
 
   void sendTessFactorToShaders();
   void sendLightFactorToShaders();
