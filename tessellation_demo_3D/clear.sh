@@ -38,6 +38,14 @@ if [ -e Cube.gcda ]; then
   rm  Cube.gcda
 fi
 
+if [ -e Scene.gcno ]; then
+  rm  Scene.gcno
+fi
+
+if [ -e Scene.gcda ]; then
+  rm  Scene.gcda
+fi
+
 if [ -e Cube.gcno ]; then
   rm  Cube.gcno
 fi
