@@ -8,7 +8,7 @@
 #define SCENE_H_
 
 #include "Shader.h"
-#include "Shape3D.h"
+#include "Cube.h"
 
 #include <iostream>
 #include <vector>
@@ -59,6 +59,7 @@ public:
 
   // uniform vars
   SecneShaderUniformVars suv;
+  void sendAllUniformToShaders();
 
 protected:
   vector<Shape3D*> objects;

@@ -48,11 +48,16 @@
 
  // ========== draw scene =================
  void Scene::drawScene() {
+   glEnable( GL_DEPTH_TEST );
+   glClearDepth( 1.0 );
+   glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+   glClear( GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT );
 
+   // switch between draw line and surface
    for (int i = 0; i < objects.size(); i++) {
      objects[i]->draw();
    }
-   glFlush();    // send all output to display 
+   glFlush();    // send all output to display
 
  }
 
@@ -134,7 +139,15 @@
   }
 
 
-  // ========== sned tessellation uniform vars to shaders
+  // ========= send all uniform vars to shaders
+  void Scene::sendAllUniformToShaders() {
+    sendTessFactorToShaders();
+    sendLightFactorToShaders();
+    sendViewMatrixToShaders();
+    sendProjMatrixToShaders();
+  }
+
+  // ========== send tessellation uniform vars to shaders
   void Scene::sendTessFactorToShaders() {
      for (int i = 0; i < shaders.size(); i++) {
        Shader * shader = shaders[i];
@@ -174,7 +187,7 @@
    for (int i = 0; i < shaders.size(); i++) {
      Shader * shader = shaders[i];
      shader->use();
-     shader->setMat4("projection", suv.projectionMatrix);
+     shader->setMat4("projectionMatrix", suv.projectionMatrix);
    }
  }
 

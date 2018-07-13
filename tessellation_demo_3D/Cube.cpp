@@ -150,6 +150,10 @@
 
  // ==== draw object ======
  void Cube::draw() {
+   // init mode
+   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   glPatchParameteri (GL_PATCH_VERTICES, 3);
+
    // use shader program
    shaderProgram->use();
    // send modelmatrix and object color to shaderProgram
