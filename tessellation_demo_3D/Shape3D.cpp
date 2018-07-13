@@ -27,6 +27,9 @@ Shape3D::Shape3D() {
 
   // init shader program point as NULL
   shaderProgram = NULL;
+
+  // default drawing mode: line
+  drawLine = true;
 }
 
 // ====== Destructor ==========

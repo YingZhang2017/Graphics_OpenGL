@@ -1,4 +1,4 @@
-/* Cube.h - a class implementation representing
+/* Cube.cpp - a class implementation representing
  *              a Cube object in OpenGL
  *
  * Ying Zhang, Jul 2018
@@ -151,7 +151,8 @@
  // ==== draw object ======
  void Cube::draw() {
    // init mode
-   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   if (drawLine) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    glPatchParameteri (GL_PATCH_VERTICES, 3);
 
    // use shader program

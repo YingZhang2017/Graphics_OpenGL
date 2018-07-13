@@ -40,6 +40,9 @@ protected:
   mat4 modelMatrix;
   vec3 object_color;
 
+  // drawing mode : 0: LINE, 1: surface
+  bool drawLine;
+
 public:
   Shape3D();
   virtual ~Shape3D();
@@ -51,6 +54,10 @@ public:
   inline Color getColor() { return color; }
   // return position
   inline vec3 getLocation() { return vec3(xLoc, yLoc, zLoc); }
+
+  // set drawing polygen mode, line/fill
+  inline void setDrawingMode(bool line) { drawLine = line; }
+
 
   // send shader uniform to shader
   void sendUniformToShader();

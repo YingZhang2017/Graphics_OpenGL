@@ -22,6 +22,7 @@ Controller:
 
 #include "Shader.h"       // Shader class for build shader program
 #include "Cube.h"         // class for build a 3D cube
+#include "Pyramid.h"      // class for build a 3D Pryamid
 
 #include "Scene.h"        // class for build Scene
 
@@ -66,7 +67,7 @@ int main () {
                          NULL,
                         "shader_fs.glsl");
   // create scenes
-  currentSceneIndex = 1;
+  currentSceneIndex = 0;
   // add first scene
   Scene * scene1 = createScene1(&shader_tess);
   allScenes.push_back(scene1);
@@ -361,14 +362,14 @@ Scene* createScene1(Shader * shader) {
   Cube* d1 = new Cube("Coral");
   d1->setSize(2, 2, 2);
   d1->setRotate(45, 0, 1, 0);
+  d1->setLocation(-2.5, -1, 0);
   // set shader program for the object
   d1->setShaderProgram(shader);
   d1->sendUniformToShader();
 
-  Cube* d2 = new Cube("ForestGreen");
-  d2->setSize(1, 2, 1);
-  d2->setRotate(-45, 1, 0, 0);
-  d2->setLocation(1.6, 0.8, 0.8);
+  Pyramid* d2 = new Pyramid("Violet");
+  d2->setSize(4, 5, 4);
+  d2->setLocation(2.5, 1, 0);
   // set shader program for object
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
@@ -384,20 +385,31 @@ Scene* createScene1(Shader * shader) {
 }
 
 /*
-* create scene 2: contains  3D objects with tessellation and normalization
+* create scene 2: contains 2 3D objects with tessellation and normalization
 */
 Scene* createScene2(Shader * shader) {
   // create objects
   Cube* d1 = new Cube("SteelBlue");
-  d1->setSize(3, 3, 3);
+  d1->setSize(2, 2, 2);
   d1->setRotate(45, 0, 1, 0);
+  d1->setLocation(0, -2, 1);
   // set shader program for the object
   d1->setShaderProgram(shader);
   d1->sendUniformToShader();
 
+
+  Cube* d2 = new Cube("Salmon");
+  d2->setSize(2, 1, 1);
+  d2->setRotate(45, 1, 1, 0);
+  d2->setLocation(3, 3, -1);
+  // d2->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d2->setShaderProgram(shader);
+  d2->sendUniformToShader();
+
   // create Scene
   Scene * currentScene = new Scene(window_width, window_height);
   currentScene->addObject(d1);
+  currentScene->addObject(d2);
   currentScene->addShader(shader);
   currentScene->sendAllUniformToShaders();
 
