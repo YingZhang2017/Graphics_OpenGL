@@ -7,18 +7,23 @@ keyboard to show the effective of above functionalities.
 Author: Ying Zhang
 ==========
 Controller:
-Raise/Lower "inner" tessellation factor: O/K keys
-Raise/Lower "outer" tessellation factor: P/L keys
+  Quit program: Q/ESC key
+  prev/next scene: N/M keys
+  Raise/Lower "inner" tessellation factor: O/K keys
+  Raise/Lower "outer" tessellation factor: P/L keys
+  roteate object in x/y/z in model coords: W/E/R keys
+  move object in x direction: LEFT/RIGHT keys
+  move object in y direction: UP/DOWN keys
+  move obejct in z direction & raise/lower both inner/outer tess factor: A/Z keys
 ***/
 
 #include <gl_yz.h>        // self-defined library
 #include "gl_utils.h"     // helper functions for check info/error
 
-#include "Shader.h"       // Shader class for shader program
-#include "Cube.h"
-#include "Color.h"
+#include "Shader.h"       // Shader class for build shader program
+#include "Cube.h"         // class for build a 3D cube
 
-#include "Scene.h"
+#include "Scene.h"        // class for build Scene
 
 #include <iostream>
 #include <string>
@@ -27,8 +32,9 @@ Raise/Lower "outer" tessellation factor: P/L keys
 using namespace glm;
 using namespace std;
 
-// test
-static Scene* currentScene;
+// scene
+static int currentSceneIndex;
+vector<Scene*> allScenes;
 
 // define the original window size
 int window_width = 1280;
@@ -37,40 +43,36 @@ int window_height = 720;
 static GLFWwindow* init();
 static void handleKeyboard(GLFWwindow* window);
 
+// create scenes
+Scene* createScene1(Shader* shader);
+Scene* createScene2(Shader* shader);
+
+
 // ======================= main ===========================
 int main () {
   // init glfw, glew, create window
   GLFWwindow* window = init();
 
   // create shader program
-  Shader shader_programme("shader_vs.glsl",
-                          "shader_tcs.glsl",
-                          "shader_tes.glsl",
-                          NULL,
-                          "shader_fs.glsl");
+  Shader shader_tess("shader_vs.glsl",
+                     "shader_tcs.glsl",
+                     "shader_tes.glsl",
+                     NULL,
+                     "shader_fs.glsl");
 
-  // create objects
-  Cube* d1 = new Cube("Coral");
-  d1->setSize(2, 2, 2);
-  d1->setRotate(45, 0, 1, 0);
-  // set shader program for the object
-  d1->setShaderProgram(&shader_programme);
-  d1->sendUniformToShader();
+  Shader shader_tess_nor("shader_vs.glsl",
+                         "shader_tcs.glsl",
+                         "shader_tes_nor.glsl",
+                         NULL,
+                        "shader_fs.glsl");
+  // create scenes
+  currentSceneIndex = 1;
+  // add first scene
+  Scene * scene1 = createScene1(&shader_tess);
+  allScenes.push_back(scene1);
+  Scene * scene2 = createScene2(&shader_tess_nor);
+  allScenes.push_back(scene2);
 
-  Cube* d2 = new Cube("ForestGreen");
-  d2->setSize(1, 2, 1);
-  d2->setRotate(-45, 1, 0, 0);
-  d2->setLocation(1.6, 0.8, 0.8);
-  // set shader program for object
-  d2->setShaderProgram(&shader_programme);
-  d2->sendUniformToShader();
-
-  // create Scene
-  currentScene = new Scene(window_width, window_height);
-  currentScene->addObject(d1);
-  currentScene->addObject(d2);
-  currentScene->addShader(&shader_programme);
-  currentScene->sendAllUniformToShaders();
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -83,7 +85,7 @@ int main () {
     handleKeyboard(window);
 
     // draw secne
-    currentScene->drawScene();
+    allScenes[currentSceneIndex]->drawScene();
 
     // display buffer stuff on screen
     glfwSwapBuffers(window);
@@ -169,8 +171,8 @@ static GLFWwindow* init ()
  */
 static void handleKeyboard (GLFWwindow* window)
 {
+    Scene* currentScene = allScenes[currentSceneIndex];
     glfwPollEvents();
-
     // handle key controls for controlling tessellation factors
     static bool o_was_down = false;
     static bool k_was_down = false;
@@ -324,4 +326,80 @@ static void handleKeyboard (GLFWwindow* window)
       r_was_down = false;
     }
 
+    // use N & M to change scene
+    static bool n_was_down = false;
+    static bool m_was_down = false;
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_N)) {
+      if (!n_was_down) {
+        n_was_down = true;
+        if (currentSceneIndex == 0) currentSceneIndex = allScenes.size() - 1;
+        else currentSceneIndex--;
+        cout << "current scene: " << currentSceneIndex << endl;
+      }
+    } else {
+      n_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_M)) {
+      if (!m_was_down) {
+        m_was_down = true;
+        if (currentSceneIndex == allScenes.size() - 1) currentSceneIndex = 0;
+        else currentSceneIndex++;
+        cout << "current scene: " << currentSceneIndex << endl;
+      }
+    } else {
+      m_was_down = false;
+    }
+}
+
+/*
+* create scene 1: contains 2 3D objects with surface tessellation
+*/
+Scene* createScene1(Shader * shader) {
+  // create objects
+  Cube* d1 = new Cube("Coral");
+  d1->setSize(2, 2, 2);
+  d1->setRotate(45, 0, 1, 0);
+  // set shader program for the object
+  d1->setShaderProgram(shader);
+  d1->sendUniformToShader();
+
+  Cube* d2 = new Cube("ForestGreen");
+  d2->setSize(1, 2, 1);
+  d2->setRotate(-45, 1, 0, 0);
+  d2->setLocation(1.6, 0.8, 0.8);
+  // set shader program for object
+  d2->setShaderProgram(shader);
+  d2->sendUniformToShader();
+
+  // create Scene
+  Scene * currentScene = new Scene(window_width, window_height);
+  currentScene->addObject(d1);
+  currentScene->addObject(d2);
+  currentScene->addShader(shader);
+  currentScene->sendAllUniformToShaders();
+
+  return currentScene;
+}
+
+/*
+* create scene 2: contains  3D objects with tessellation and normalization
+*/
+Scene* createScene2(Shader * shader) {
+  // create objects
+  Cube* d1 = new Cube("SteelBlue");
+  d1->setSize(3, 3, 3);
+  d1->setRotate(45, 0, 1, 0);
+  // set shader program for the object
+  d1->setShaderProgram(shader);
+  d1->sendUniformToShader();
+
+  // create Scene
+  Scene * currentScene = new Scene(window_width, window_height);
+  currentScene->addObject(d1);
+  currentScene->addShader(shader);
+  currentScene->sendAllUniformToShaders();
+
+  return currentScene;
 }
