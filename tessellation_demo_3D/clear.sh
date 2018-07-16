@@ -42,6 +42,14 @@ if [ -e Cube.gcno ]; then
   rm  Cube.gcno
 fi
 
+if [ -e CubeQuad.gcno ]; then
+  rm  CubeQuad.gcno
+fi
+
+if [ -e CubeQuad.gcda ]; then
+  rm  CubeQuad.gcda
+fi
+
 if [ -e Pyramid.gcda ]; then
   rm  Pyramid.gcda
 fi

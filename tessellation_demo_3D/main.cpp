@@ -24,7 +24,7 @@ Controller:
 #include "Cube.h"         // class for build a 3D cube
 #include "Pyramid.h"      // class for build a 3D Pryamid
 #include "Dodecahedron.h" // class for build a Dodecahedron
-
+#include "CubeQuad.h"     // calss for build a 3D cube in quad
 
 #include "Scene.h"        // class for build Scene
 
@@ -50,6 +50,7 @@ static void handleKeyboard(GLFWwindow* window);
 Scene* createScene1(Shader* shader);
 Scene* createScene2(Shader* shader);
 Scene* createScene3(Shader* shader);
+Scene* createScene4(Shader* shader);
 
 
 // ======================= main ===========================
@@ -65,15 +66,20 @@ int main () {
                      "shader_fs.glsl");
 
   Shader shader_tess_2("shader2_vs.glsl",
-                         "shader2_tcs.glsl",
-                         "shader2_tes.glsl",
-                         NULL,
+                        "shader2_tcs.glsl",
+                        "shader2_tes.glsl",
+                        NULL,
                         "shader2_fs.glsl");
   Shader shader_tess_3("shader3_vs.glsl",
                         "shader3_tcs.glsl",
-                         "shader3_tes.glsl",
-                           NULL,
-                          "shader3_fs.glsl");
+                        "shader3_tes.glsl",
+                        NULL,
+                        "shader3_fs.glsl");
+  Shader shader_tess_4("shader_vs.glsl",
+                        "shader4_tcs.glsl",
+                        "shader4_tes.glsl",
+                        NULL,
+                        "shader_fs.glsl");
   // create scenes
   currentSceneIndex = 0;
   // add first scene
@@ -87,6 +93,8 @@ int main () {
   allScenes.push_back(scene2);
   Scene * scene3 = createScene3(&shader_tess_3);
   allScenes.push_back(scene3);
+  //Scene * scene4 = createScene4(&shader_tess_4);
+  //allScenes.push_back(scene4);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -485,6 +493,26 @@ Scene* createScene3(Shader * shader) {
   currentScene->addObject(d1);
   currentScene->addObject(d2);
   currentScene->addObject(d3);
+  currentScene->addShader(shader);
+  currentScene->sendAllUniformToShaders();
+
+  return currentScene;
+}
+
+/*
+* create scene 4: contains a cube draw and tess in quad
+* draw in line
+*/
+Scene* createScene4(Shader* shader) {
+  CubeQuad* d1 = new CubeQuad("DogerBlue");
+  d1->setSize(3, 3, 3);
+  //d1->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d1->setShaderProgram(shader);
+  d1->sendUniformToShader();
+
+  // create Scene
+  Scene * currentScene = new Scene(window_width, window_height);
+  currentScene->addObject(d1);
   currentScene->addShader(shader);
   currentScene->sendAllUniformToShaders();
 
