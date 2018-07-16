@@ -8,7 +8,7 @@ Author: Ying Zhang
 ==========
 Controller:
   Quit program: Q/ESC key
-  prev/next scene: N/M keys
+  next scene: N key
   Raise/Lower "inner" tessellation factor: O/K keys
   Raise/Lower "outer" tessellation factor: P/L keys
   roteate object in x/y/z in model coords: W/E/R keys
@@ -25,6 +25,8 @@ Controller:
 #include "Pyramid.h"      // class for build a 3D Pryamid
 #include "Dodecahedron.h" // class for build a Dodecahedron
 #include "CubeQuad.h"     // calss for build a 3D cube in quad
+#include "Sphere.h"       // calss for build a 3D sphere in quad
+
 
 #include "Scene.h"        // class for build Scene
 
@@ -75,26 +77,22 @@ int main () {
                         "shader3_tes.glsl",
                         NULL,
                         "shader3_fs.glsl");
-  Shader shader_tess_4("shader_vs.glsl",
+  Shader shader_tess_4("shader4_vs.glsl",
                         "shader4_tcs.glsl",
                         "shader4_tes.glsl",
-                        NULL,
-                        "shader_fs.glsl");
+                        "shader4_gs.glsl",
+                        "shader4_fs.glsl");
   // create scenes
   currentSceneIndex = 0;
   // add first scene
   Scene * scene1 = createScene1(&shader_tess);
-  scene1->setLightingFactors(vec3(-2.0f, 0.0f, 2.0f),     // light position
-                             vec3(1.0f, 1.0f, 1.0f),     // light color
-                             vec3(0.0f, 0.75f, 0.75f),   // diffuse material
-                             vec3(0.04f, 0.04f, 0.04f)); // ambient material
   allScenes.push_back(scene1);
   Scene * scene2 = createScene2(&shader_tess_2);
   allScenes.push_back(scene2);
   Scene * scene3 = createScene3(&shader_tess_3);
   allScenes.push_back(scene3);
-  //Scene * scene4 = createScene4(&shader_tess_4);
-  //allScenes.push_back(scene4);
+  Scene * scene4 = createScene4(&shader_tess_4);
+  allScenes.push_back(scene4);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -351,21 +349,20 @@ static void handleKeyboard (GLFWwindow* window)
       r_was_down = false;
     }
 
-    // use N & M to change scene
+    // use N to go to next scene
     static bool n_was_down = false;
-    static bool m_was_down = false;
 
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_N)) {
       if (!n_was_down) {
         n_was_down = true;
-        if (currentSceneIndex == 0) currentSceneIndex = allScenes.size() - 1;
-        else currentSceneIndex--;
+        if (currentSceneIndex == allScenes.size() - 1) currentSceneIndex = 0;
+        else currentSceneIndex++;
         cout << "current scene: " << currentSceneIndex << endl;
       }
     } else {
       n_was_down = false;
     }
-
+    /*
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_M)) {
       if (!m_was_down) {
         m_was_down = true;
@@ -376,6 +373,7 @@ static void handleKeyboard (GLFWwindow* window)
     } else {
       m_was_down = false;
     }
+    */
 }
 
 /*
@@ -500,19 +498,34 @@ Scene* createScene3(Shader * shader) {
 }
 
 /*
-* create scene 4: contains a cube draw and tess in quad
-* draw in line
+* create scene 4: 3 sphere with geometry & tessllation shader
 */
 Scene* createScene4(Shader* shader) {
-  CubeQuad* d1 = new CubeQuad("DogerBlue");
-  d1->setSize(3, 3, 3);
-  //d1->setDrawingMode(0);  // 0: fill, 1:line(default)
+  Sphere * d1 = new Sphere("DogerBlue");
+  d1->setSize(3,3,3);
+  d1->setRotate(45, 1, 1, 1);
+  d1->setLocation(0, 0, -3);
   d1->setShaderProgram(shader);
   d1->sendUniformToShader();
+
+  Sphere * d2 = new Sphere(0.1, 0.2, 0.7, 1.0);
+  d2->setRotate(30, 1, 0, 0);
+  d2->setLocation(-1, 1, 2);
+  d2->setShaderProgram(shader);
+  d2->sendUniformToShader();
+
+  Sphere * d3 = new Sphere("IndiaRed");
+  d3->setSize(2,2,2);
+  d3->setRotate(60, 0, 0, 1);
+  d3->setLocation(2, -1, 1);
+  d3->setShaderProgram(shader);
+  d3->sendUniformToShader();
 
   // create Scene
   Scene * currentScene = new Scene(window_width, window_height);
   currentScene->addObject(d1);
+  currentScene->addObject(d2);
+  currentScene->addObject(d3);
   currentScene->addShader(shader);
   currentScene->sendAllUniformToShaders();
 

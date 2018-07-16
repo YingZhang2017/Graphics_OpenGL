@@ -23,12 +23,13 @@ void main () {
 	vec3 diffuse = diff * light_color;
 
 	// specular
+
 	float specular_strength = 0.5;
 	vec3 view_direction = normalize(view_position - frag_pos);
 	vec3 reflect_direction = reflect(-light_direction, frag_normal);
 	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), 16);
 	vec3 specular = specular_strength * spec * object_color;
-
+	
 	vec3 final = (ambient + diffuse + specular) * object_color;
 	fragment_colour = vec4(final, 1.0);
 

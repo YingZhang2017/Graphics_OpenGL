@@ -26,7 +26,7 @@ void main () {
 	vec3 n3 = gl_TessCoord.z * tc_normal[2];
 	vec3 nor = normalize(n1 + n2 + n3);
 	frag_normal = mat3(transpose(inverse(modelMatrix))) * nor;;
-
+	//frag_normal = vec3(modelMatrix * vec4(nor, 1.0));
 
 	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
 

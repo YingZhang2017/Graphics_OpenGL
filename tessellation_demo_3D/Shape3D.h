@@ -31,6 +31,7 @@ protected:
   // VBO information
   GLuint vboId_vert;
   GLuint vboId_normal;
+  GLuint vboId_indices;
   int vboBytes;    // size of vbo buffer in bytes
   int vboSize;     // number of vertices/colors/etc... in vbo buffer
   // vao id
