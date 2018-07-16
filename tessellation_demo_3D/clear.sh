@@ -50,6 +50,14 @@ if [ -e Pyramid.gcno ]; then
   rm  Pyramid.gcno
 fi
 
+if [ -e Dodecahedron.gcda ]; then
+  rm  Dodecahedron.gcda
+fi
+
+if [ -e Dodecahedron.gcno ]; then
+  rm  Dodecahedron.gcno
+fi
+
 if [ -e Scene.gcda ]; then
   rm  Scene.gcda
 fi
@@ -57,7 +65,6 @@ fi
 if [ -e Scene.gcno ]; then
   rm  Scene.gcno
 fi
-
 
 if [ -e tessellation_demo ]; then
   rm  tessellation_demo

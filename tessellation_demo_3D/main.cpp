@@ -23,6 +23,8 @@ Controller:
 #include "Shader.h"       // Shader class for build shader program
 #include "Cube.h"         // class for build a 3D cube
 #include "Pyramid.h"      // class for build a 3D Pryamid
+#include "Dodecahedron.h" // class for build a Dodecahedron
+
 
 #include "Scene.h"        // class for build Scene
 
@@ -47,6 +49,7 @@ static void handleKeyboard(GLFWwindow* window);
 // create scenes
 Scene* createScene1(Shader* shader);
 Scene* createScene2(Shader* shader);
+Scene* createScene3(Shader* shader);
 
 
 // ======================= main ===========================
@@ -61,22 +64,33 @@ int main () {
                      NULL,
                      "shader_fs.glsl");
 
-  Shader shader_tess_nor("shader_vs.glsl",
-                         "shader_tcs.glsl",
-                         "shader_tes_nor.glsl",
+  Shader shader_tess_2("shader2_vs.glsl",
+                         "shader2_tcs.glsl",
+                         "shader2_tes.glsl",
                          NULL,
-                        "shader_fs.glsl");
+                        "shader2_fs.glsl");
+  Shader shader_tess_3("shader3_vs.glsl",
+                        "shader3_tcs.glsl",
+                         "shader3_tes.glsl",
+                           NULL,
+                          "shader3_fs.glsl");
   // create scenes
   currentSceneIndex = 0;
   // add first scene
   Scene * scene1 = createScene1(&shader_tess);
+  scene1->setLightingFactors(vec3(-2.0f, 0.0f, 2.0f),     // light position
+                             vec3(1.0f, 1.0f, 1.0f),     // light color
+                             vec3(0.0f, 0.75f, 0.75f),   // diffuse material
+                             vec3(0.04f, 0.04f, 0.04f)); // ambient material
   allScenes.push_back(scene1);
-  Scene * scene2 = createScene2(&shader_tess_nor);
+  Scene * scene2 = createScene2(&shader_tess_2);
   allScenes.push_back(scene2);
-
+  Scene * scene3 = createScene3(&shader_tess_3);
+  allScenes.push_back(scene3);
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
+
   // start loop
   while (!glfwWindowShouldClose(window)) {
     // clear the buff first
@@ -85,7 +99,7 @@ int main () {
     // handle key controls as input
     handleKeyboard(window);
 
-    // draw secne
+    // draw currentsecne
     allScenes[currentSceneIndex]->drawScene();
 
     // display buffer stuff on screen
@@ -167,8 +181,10 @@ static GLFWwindow* init ()
  * handle key board input
  * o/k: inner tessellation factor
  * p/l: outer tessellation factor
- * UP/DOWN/LEFT/RIGHT: move scene in XY coords
- *
+ * UP/DOWN/LEFT/RIGHT: move obj in XY axis
+ * W/E/R: rotate x, y. z
+ * A/Z: move obj in z axis and tess
+ * M/N: prev/next scene
  */
 static void handleKeyboard (GLFWwindow* window)
 {
@@ -362,22 +378,30 @@ Scene* createScene1(Shader * shader) {
   Cube* d1 = new Cube("Coral");
   d1->setSize(2, 2, 2);
   d1->setRotate(45, 0, 1, 0);
-  d1->setLocation(-2.5, -1, 0);
+  d1->setLocation(0, 0, 0);
   // set shader program for the object
   d1->setShaderProgram(shader);
   d1->sendUniformToShader();
 
   Pyramid* d2 = new Pyramid("Violet");
   d2->setSize(4, 5, 4);
-  d2->setLocation(2.5, 1, 0);
+  d2->setLocation(4,2,0);
   // set shader program for object
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
+
+  Dodecahedron* d3 = new Dodecahedron("SteelBlue");
+  d2->setSize(5, 5, 5);
+  d3->setLocation(-4,-2,2);
+  // set shader program for the object
+  d3->setShaderProgram(shader);
+  d3->sendUniformToShader();
 
   // create Scene
   Scene * currentScene = new Scene(window_width, window_height);
   currentScene->addObject(d1);
   currentScene->addObject(d2);
+  currentScene->addObject(d3);
   currentScene->addShader(shader);
   currentScene->sendAllUniformToShaders();
 
@@ -386,30 +410,81 @@ Scene* createScene1(Shader * shader) {
 
 /*
 * create scene 2: contains 2 3D objects with tessellation and normalization
+* draw in line
 */
 Scene* createScene2(Shader * shader) {
   // create objects
-  Cube* d1 = new Cube("SteelBlue");
+  Cube* d1 = new Cube("Orange");
   d1->setSize(2, 2, 2);
   d1->setRotate(45, 0, 1, 0);
-  d1->setLocation(0, -2, 1);
+  d1->setLocation(-4, -2, 0);
   // set shader program for the object
   d1->setShaderProgram(shader);
   d1->sendUniformToShader();
 
 
-  Cube* d2 = new Cube("Salmon");
-  d2->setSize(2, 1, 1);
+  Pyramid* d2 = new Pyramid("Salmon");
+  d2->setSize(2, 2, 1);
   d2->setRotate(45, 1, 1, 0);
-  d2->setLocation(3, 3, -1);
-  // d2->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d2->setLocation(0, 2, 0);
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
+
+  Dodecahedron* d3 = new Dodecahedron("SteelBlue");
+  d3->setSize(1.5,1.5,1.5);
+  d3->setLocation(4, -2, 0);
+  d3->setShaderProgram(shader);
+  d3->sendUniformToShader();
 
   // create Scene
   Scene * currentScene = new Scene(window_width, window_height);
   currentScene->addObject(d1);
   currentScene->addObject(d2);
+  currentScene->addObject(d3);
+  currentScene->addShader(shader);
+  currentScene->sendAllUniformToShaders();
+
+  return currentScene;
+}
+
+
+/*
+* create scene 3: contains 2 3D objects with tessellation and normalization d
+* draw in surface
+*/
+Scene* createScene3(Shader * shader) {
+  // create objects
+  Pyramid* d1 = new Pyramid("ForestGreen");
+  d1->setSize(2, 2, 2);
+  d1->setRotate(30, 0, 1, 0);
+  d1->setLocation(-3, 1, 0);
+  d1->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d1->setShaderProgram(shader);
+  d1->sendUniformToShader();
+
+
+  Cube* d2 = new Cube("Orange");
+  d2->setSize(2, 2, 3);
+  d2->setRotate(78, 1, 1, 1);
+  d2->setLocation(3, 1, 0);
+  d2->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d2->setShaderProgram(shader);
+  d2->sendUniformToShader();
+
+
+  Dodecahedron* d3 = new Dodecahedron(0.4, 0.3, 0.6);
+  d3->setSize(1.5, 1.5, 1.5);
+  d3->setRotate(60, 0, 1, 0);
+  d3->setLocation(0, -2, 0);
+  d3->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d3->setShaderProgram(shader);
+  d3->sendUniformToShader();
+
+  // create Scene
+  Scene * currentScene = new Scene(window_width, window_height);
+  currentScene->addObject(d1);
+  currentScene->addObject(d2);
+  currentScene->addObject(d3);
   currentScene->addShader(shader);
   currentScene->sendAllUniformToShaders();
 
