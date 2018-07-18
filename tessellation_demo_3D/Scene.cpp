@@ -87,9 +87,9 @@
 
  // =========== set view factors ===============
  void Scene::setViewFactors(vec3 camera_pos, vec3 view_pos, vec3 head_up) {
-   suv.camera_position = vec3(0.0f, 0.0f, 10.0f);
-   suv.view_position = vec3(0.0f, 0.0f, 0.0f);
-   suv.head_up = vec3(0.0f, 1.0f, 0.0f);
+   suv.camera_position = camera_pos;
+   suv.view_position = view_pos;
+   suv.head_up = head_up;
    suv.viewMatrix = generateViewMatrix();
 
    if (!shaders.empty()) {

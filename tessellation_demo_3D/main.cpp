@@ -24,7 +24,6 @@ Controller:
 #include "Cube.h"         // class for build a 3D cube
 #include "Pyramid.h"      // class for build a 3D Pryamid
 #include "Dodecahedron.h" // class for build a Dodecahedron
-#include "CubeQuad.h"     // calss for build a 3D cube in quad
 #include "Sphere.h"       // calss for build a 3D sphere in quad
 
 
@@ -86,13 +85,15 @@ int main () {
   currentSceneIndex = 0;
   // add first scene
   Scene * scene1 = createScene1(&shader_tess);
-  allScenes.push_back(scene1);
   Scene * scene2 = createScene2(&shader_tess_2);
-  allScenes.push_back(scene2);
   Scene * scene3 = createScene3(&shader_tess_3);
-  allScenes.push_back(scene3);
   Scene * scene4 = createScene4(&shader_tess_4);
+
+  allScenes.push_back(scene1);
+  allScenes.push_back(scene2);
+  allScenes.push_back(scene3);
   allScenes.push_back(scene4);
+
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -362,18 +363,6 @@ static void handleKeyboard (GLFWwindow* window)
     } else {
       n_was_down = false;
     }
-    /*
-    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_M)) {
-      if (!m_was_down) {
-        m_was_down = true;
-        if (currentSceneIndex == allScenes.size() - 1) currentSceneIndex = 0;
-        else currentSceneIndex++;
-        cout << "current scene: " << currentSceneIndex << endl;
-      }
-    } else {
-      m_was_down = false;
-    }
-    */
 }
 
 /*
@@ -430,14 +419,14 @@ Scene* createScene2(Shader * shader) {
 
 
   Pyramid* d2 = new Pyramid("Salmon");
-  d2->setSize(2, 2, 1);
+  d2->setSize(2, 2, 3);
   d2->setRotate(45, 1, 1, 0);
-  d2->setLocation(0, 2, 0);
+  d2->setLocation(0, 2, 2);
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
 
-  Dodecahedron* d3 = new Dodecahedron("SteelBlue");
-  d3->setSize(1.5,1.5,1.5);
+  Dodecahedron* d3 = new Dodecahedron("ForestGreen");
+  d3->setSize(1.2, 1.2, 0.8);
   d3->setLocation(4, -2, 0);
   d3->setShaderProgram(shader);
   d3->sendUniformToShader();
@@ -478,7 +467,7 @@ Scene* createScene3(Shader * shader) {
   d2->sendUniformToShader();
 
 
-  Dodecahedron* d3 = new Dodecahedron(0.4, 0.3, 0.6);
+  Dodecahedron* d3 = new Dodecahedron(0.4, 0.3, 0.6, 1.0);
   d3->setSize(1.5, 1.5, 1.5);
   d3->setRotate(60, 0, 1, 0);
   d3->setLocation(0, -2, 0);
@@ -510,14 +499,14 @@ Scene* createScene4(Shader* shader) {
 
   Sphere * d2 = new Sphere(0.1, 0.2, 0.7, 1.0);
   d2->setRotate(30, 1, 0, 0);
-  d2->setLocation(-1, 1, 2);
+  d2->setLocation(-2, 2, 2);
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
 
   Sphere * d3 = new Sphere("IndiaRed");
   d3->setSize(2,2,2);
   d3->setRotate(60, 0, 0, 1);
-  d3->setLocation(2, -1, 1);
+  d3->setLocation(3, -1, 1);
   d3->setShaderProgram(shader);
   d3->sendUniformToShader();
 

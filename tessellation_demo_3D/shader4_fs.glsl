@@ -27,7 +27,7 @@ void main () {
 	vec3 norm = normalize(g_face_normal);
 	float diff = abs(dot(norm, light_position));
 	float ambient_strength = 0.8f;
-	vec3 final = ambient_strength * ambient_material + diff * diffuse_material;
+	vec3 final = (ambient_strength * ambient_material + diff * diffuse_material) * light_color;
 
 	float d1 = min(min(g_patch_distance.x, g_patch_distance.y), g_patch_distance.z);
 	float d2 = min(min(g_tri_distance.x, g_tri_distance.y), g_tri_distance.z);

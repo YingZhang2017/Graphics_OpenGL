@@ -42,12 +42,12 @@ if [ -e Cube.gcno ]; then
   rm  Cube.gcno
 fi
 
-if [ -e CubeQuad.gcno ]; then
-  rm  CubeQuad.gcno
+if [ -e Sphere.gcda ]; then
+  rm  Sphere.gcda
 fi
 
-if [ -e CubeQuad.gcda ]; then
-  rm  CubeQuad.gcda
+if [ -e Sphere.gcno ]; then
+  rm  Sphere.gcno
 fi
 
 if [ -e Pyramid.gcda ]; then

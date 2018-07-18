@@ -43,67 +43,50 @@
    0, 0, -1,      -0.5, -0.5, -0.5,   -0.5, 0.5, -0.5
  };
 
- float dnormals [] = {
-   0.5, -0.5, 0,    0.5, -0.5, 0,     0.5, -0.5, 0,
-   0, -0.5, 0.5,    0, -0.5, 0.5,     0, -0.5, 0.5,
-   -0.5, -0.5, 0,   -0.5, -0.5, 0,    -0.5, -0.5, 0,
-   0, -0.5, -0.5,   0, -0.5, -0.5,    0, -0.5, -0.5,
+ float dnormals [72 * 3];
 
-   -0.5, -0.5, 0,   -0.5, -0.5, 0,    -0.5, -0.5, 0,
-   0, -0.5, -0.5,   0, -0.5, -0.5,    0, -0.5, -0.5,
-   0.5, -0.5, 0,    0.5, -0.5, 0,      0.5, -0.5, 0,
-   0, -0.5, 0.5,    0, -0.5, 0.5,    0, -0.5, 0.5,
-
-   0.5, 0, -0.5,    0.5, 0, -0.5,    0.5, 0, -0.5,
-   0.5, 0.5, 0,    0.5, 0.5, 0,    0.5, 0.5, 0,
-   0.5, 0, 0.5,    0.5, 0, 0.5,    0.5, 0, 0.5,
-   0.5, -0.5, 0,    0.5, -0.5, 0,    0.5, -0.5, 0,
-
-   -0.5, -0.5, 0,    -0.5, -0.5, 0,    -0.5, -0.5, 0,
-   -0.5, 0, 0.5,    -0.5, 0, 0.5,    -0.5, 0, 0.5,
-   -0.5, 0.5, 0,    -0.5, 0.5, 0,    -0.5, 0.5, 0,
-   -0.5, 0, -0.5,    -0.5, 0, -0.5,    -0.5, 0, -0.5,
-
-   0, -0.5, -0.5,    0, -0.5, -0.5,    0, -0.5, -0.5,
-   -0.5, 0, -0.5,    -0.5, 0, -0.5,    -0.5, 0, -0.5,
-   0, 0.5, -0.5,    0, 0.5, -0.5,    0, 0.5, -0.5,
-   0.5, 0, -0.5,    0.5, 0, -0.5,    0.5, 0, -0.5,
-
-   0, 0.5, -0.5,    0, 0.5, -0.5,    0, 0.5, -0.5,
-   0.5, 0, -0.5,    0.5, 0, -0.5,    0.5, 0, -0.5,
-   0, -0.5, -0.5,    0, -0.5, -0.5,    0, -0.5, -0.5,
-   -0.5, 0, -0.5,    -0.5, 0, -0.5,    -0.5, 0, -0.5
-  };
-
-vec3 get_Normal(vec3 p1,vec3 p2,vec3 p3) {
-
+vec3 getNormal(vec3 p1,vec3 p2,vec3 p3) {
       float a = ( (p2.y-p1.y)*(p3.z-p1.z)-(p2.z-p1.z)*(p3.y-p1.y) );
-
       float b = ( (p2.z-p1.z)*(p3.x-p1.x)-(p2.x-p1.x)*(p3.z-p1.z) );
-
       float c = ( (p2.x-p1.x)*(p3.y-p1.y)-(p2.y-p1.y)*(p3.x-p1.x) );
-
       return vec3(a,b,c);
+  }
 
+  void generateNormals() {
+    int n = 0;
+    for (int i = 0; i < 24; i++) {
+      vec3 p0(dverts[i * 9], dverts[i * 9 + 1], dverts[i * 9 + 2]);
+      vec3 p1(dverts[i * 9 + 3], dverts[i * 9 + 4], dverts[i * 9 + 5]);
+      vec3 p2(dverts[i * 9 + 6], dverts[i * 9 + 7], dverts[i * 9 + 8]);
+
+      vec3 nor = getNormal(p0, p1, p2);
+      for (int k = 0; k < 3; k++) {
+        dnormals[n++] = nor.x;
+        dnormals[n++] = nor.y;
+        dnormals[n++] = nor.z;
+      }
+    }
   }
 
 
  // ==== Constructor ====
  Dodecahedron::Dodecahedron(string colorName) {
    setColor(colorName);
-
+   generateNormals();
    // create buffer
    createBuffer();
  }
 
  Dodecahedron::Dodecahedron(Color c) {
    color = c;
+   generateNormals();
    // create buffer
    createBuffer();
  }
 
  Dodecahedron::Dodecahedron(float r, float g, float b, float a) {
    color.set(r, g, b, a);
+   generateNormals();
    // create buffer
    createBuffer();
  }
