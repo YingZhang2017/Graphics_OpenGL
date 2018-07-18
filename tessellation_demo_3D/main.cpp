@@ -8,7 +8,7 @@ Author: Ying Zhang
 ==========
 Controller:
   Quit program: Q/ESC key
-  next scene: N key
+  prev/next scene: N/M key
   Raise/Lower "inner" tessellation factor: O/K keys
   Raise/Lower "outer" tessellation factor: P/L keys
   roteate object in x/y/z in model coords: W/E/R keys
@@ -24,7 +24,6 @@ Controller:
 #include "Cube.h"         // class for build a 3D cube
 #include "Pyramid.h"      // class for build a 3D Pryamid
 #include "Dodecahedron.h" // class for build a Dodecahedron
-#include "Sphere.h"       // calss for build a 3D sphere in quad
 
 
 #include "Scene.h"        // class for build Scene
@@ -74,25 +73,19 @@ int main () {
   Shader shader_tess_3("shader3_vs.glsl",
                         "shader3_tcs.glsl",
                         "shader3_tes.glsl",
-                        NULL,
+                        "shader3_gs.glsl",
                         "shader3_fs.glsl");
-  Shader shader_tess_4("shader4_vs.glsl",
-                        "shader4_tcs.glsl",
-                        "shader4_tes.glsl",
-                        "shader4_gs.glsl",
-                        "shader4_fs.glsl");
+
   // create scenes
   currentSceneIndex = 0;
   // add first scene
   Scene * scene1 = createScene1(&shader_tess);
   Scene * scene2 = createScene2(&shader_tess_2);
   Scene * scene3 = createScene3(&shader_tess_3);
-  Scene * scene4 = createScene4(&shader_tess_4);
 
   allScenes.push_back(scene1);
   allScenes.push_back(scene2);
   allScenes.push_back(scene3);
-  allScenes.push_back(scene4);
 
 
   glEnable(GL_DEPTH_TEST);
@@ -350,8 +343,9 @@ static void handleKeyboard (GLFWwindow* window)
       r_was_down = false;
     }
 
-    // use N to go to next scene
+    // use N/M to go to prev/next scene
     static bool n_was_down = false;
+    static bool m_was_down = false;
 
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_N)) {
       if (!n_was_down) {
@@ -362,6 +356,17 @@ static void handleKeyboard (GLFWwindow* window)
       }
     } else {
       n_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_M)) {
+      if (!m_was_down) {
+        m_was_down = true;
+        if (currentSceneIndex == 0) currentSceneIndex = allScenes.size() - 1;
+        else currentSceneIndex--;
+        cout << "current scene: " << currentSceneIndex << endl;
+      }
+    } else {
+      m_was_down = false;
     }
 }
 
@@ -419,7 +424,7 @@ Scene* createScene2(Shader * shader) {
 
 
   Pyramid* d2 = new Pyramid("Salmon");
-  d2->setSize(2, 2, 3);
+  d2->setSize(1, 1, 1.5);
   d2->setRotate(45, 1, 1, 0);
   d2->setLocation(0, 2, 2);
   d2->setShaderProgram(shader);
@@ -472,41 +477,6 @@ Scene* createScene3(Shader * shader) {
   d3->setRotate(60, 0, 1, 0);
   d3->setLocation(0, -2, 0);
   d3->setDrawingMode(0);  // 0: fill, 1:line(default)
-  d3->setShaderProgram(shader);
-  d3->sendUniformToShader();
-
-  // create Scene
-  Scene * currentScene = new Scene(window_width, window_height);
-  currentScene->addObject(d1);
-  currentScene->addObject(d2);
-  currentScene->addObject(d3);
-  currentScene->addShader(shader);
-  currentScene->sendAllUniformToShaders();
-
-  return currentScene;
-}
-
-/*
-* create scene 4: 3 sphere with geometry & tessllation shader
-*/
-Scene* createScene4(Shader* shader) {
-  Sphere * d1 = new Sphere("DogerBlue");
-  d1->setSize(3,3,3);
-  d1->setRotate(45, 1, 1, 1);
-  d1->setLocation(0, 0, -3);
-  d1->setShaderProgram(shader);
-  d1->sendUniformToShader();
-
-  Sphere * d2 = new Sphere(0.1, 0.2, 0.7, 1.0);
-  d2->setRotate(30, 1, 0, 0);
-  d2->setLocation(-2, 2, 2);
-  d2->setShaderProgram(shader);
-  d2->sendUniformToShader();
-
-  Sphere * d3 = new Sphere("IndiaRed");
-  d3->setSize(2,2,2);
-  d3->setRotate(60, 0, 0, 1);
-  d3->setLocation(3, -1, 1);
   d3->setShaderProgram(shader);
   d3->sendUniformToShader();
 

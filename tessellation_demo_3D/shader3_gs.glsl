@@ -14,6 +14,7 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 
 void main() {
+  // set normal matrix
   mat4 nm = transpose(inverse(viewMatrix * modelMatrix));
   mat3 normalMatrix;
   normalMatrix[0] = vec3(nm[0].xyz);

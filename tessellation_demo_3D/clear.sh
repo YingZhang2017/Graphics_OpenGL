@@ -42,13 +42,6 @@ if [ -e Cube.gcno ]; then
   rm  Cube.gcno
 fi
 
-if [ -e Sphere.gcda ]; then
-  rm  Sphere.gcda
-fi
-
-if [ -e Sphere.gcno ]; then
-  rm  Sphere.gcno
-fi
 
 if [ -e Pyramid.gcda ]; then
   rm  Pyramid.gcda

@@ -1,36 +1,36 @@
 #version 410
 
-in vec3 frag_pos;
-in vec3 frag_normal;
-in vec3 colour;
-
+in vec3 g_face_normal;
+in vec3 g_patch_distance;
+in vec3 g_tri_distance;
+in float g_primitive;
 
 uniform vec3 object_color;
 uniform vec3 light_color;
+
 uniform vec3 light_position;
-uniform vec3 view_position;
+uniform vec3 diffuse_material;
+uniform vec3 ambient_material;
 
 out vec4 fragment_colour;
 
+
+float amplify (float d, float scale, float offset) {
+	d = scale * d + offset;
+	d = clamp(d, 0, 1);
+	d = 1 - exp2(-2 * d * d);
+	return d;
+}
+
 void main () {
-	// ambient
+	vec3 norm = normalize(g_face_normal);
+	float diff = abs(dot(norm, light_position));
 	float ambient_strength = 0.8f;
-	vec3 ambient = ambient_strength * light_color;
+	vec3 final = (ambient_strength * ambient_material + diff * diffuse_material) * light_color;
 
-	// diffuse
-	vec3 light_direction = normalize(light_position - frag_pos);
-	float diff = max(dot(frag_normal, light_direction), 0.0);
-	vec3 diffuse = diff * light_color;
-
-	// specular
-
-	float specular_strength = 0.5;
-	vec3 view_direction = normalize(view_position - frag_pos);
-	vec3 reflect_direction = reflect(-light_direction, frag_normal);
-	float spec = pow(max(dot(view_direction, reflect_direction), 0.0), 16);
-	vec3 specular = specular_strength * spec * object_color;
-	
-	vec3 final = (ambient + diffuse + specular) * object_color;
+	float d1 = min(min(g_patch_distance.x, g_patch_distance.y), g_patch_distance.z);
+	float d2 = min(min(g_tri_distance.x, g_tri_distance.y), g_tri_distance.z);
+	final = amplify(d1, 50, -0.3) * amplify (d2, 60, -0.3) * object_color;
 	fragment_colour = vec4(final, 1.0);
 
 }
