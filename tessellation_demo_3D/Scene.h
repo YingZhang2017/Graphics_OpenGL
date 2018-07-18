@@ -53,6 +53,7 @@ public:
   void setProjectionFactors(float angle, float aspec, float near, float far);
 
   // scene interactions for all objects in SecneShaderUniformVars
+  void sceneScale(float x_offset, float y_offset, float z_offset);
   void sceneRotate(float angle, float x, float y, float z);
   void sceneTranslate(float x_offset, float y_offset, float z_offset);
   void sceneTessllate(float inner_offset, float outer_offset);

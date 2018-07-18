@@ -55,7 +55,8 @@ public:
   inline Color getColor() { return color; }
   // return position
   inline vec3 getLocation() { return vec3(xLoc, yLoc, zLoc); }
-
+  // return scale
+  inline vec3 getScale() { return vec3(xSize, ySize, zSize); }
   // set drawing polygen mode, line/fill
   inline void setDrawingMode(bool line) { drawLine = line; }
 

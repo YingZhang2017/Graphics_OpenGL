@@ -109,6 +109,21 @@
   }
 
   // ===== scene interations ==========
+  // ===== scene scale  ===============
+  void Scene::sceneScale(float x_offset, float y_offset, float z_offset) {
+    for (int i = 0; i < objects.size(); i++) {
+        vec3 size = objects[i]->getScale();
+        if (x_offset <= 0 || y_offset <= 0 || z_offset <= 0) {
+          cerr << "ERROR: sceneScale: parameter should > 0" << '\n';
+          x_offset = x_offset < 0 ? 1.0 : x_offset;
+          y_offset = y_offset < 0 ? 1.0 : y_offset;
+          z_offset = z_offset < 0 ? 1.0 : z_offset;
+        }
+        objects[i]->setSize(size.x * x_offset, size.y * y_offset, size.z * z_offset);
+        objects[i]->sendModelMatrixToShader();
+    }
+  }
+
   // ===== scene rotate ===============
   void Scene::sceneRotate(float angle, float x, float y, float z) {
     for (int i = 0; i < objects.size(); i++) {

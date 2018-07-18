@@ -350,6 +350,31 @@ static void handleKeyboard (GLFWwindow* window)
       r_was_down = false;
     }
 
+    // use s, x to set scale for objects
+    static bool s_was_down = false;
+    static bool x_was_down = false;
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_S)) {
+      if (!s_was_down) {
+        s_was_down = true;
+        currentScene->sceneScale(1.1, 1.1, 1.1);
+        cout << "scale: larger the object" << endl;
+      }
+    } else {
+      s_was_down = false;
+    }
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_X)) {
+      if (!x_was_down) {
+        x_was_down = true;
+        currentScene->sceneScale(0.9, 0.9, 0.9);
+        cout << "scale: smaller the object" << endl;
+      }
+    } else {
+      x_was_down = false;
+    }
+
+
     // use N/M to go to prev/next scene
     static bool n_was_down = false;
     static bool m_was_down = false;
