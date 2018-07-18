@@ -15,6 +15,7 @@ Controller:
   move object in x direction: LEFT/RIGHT keys
   move object in y direction: UP/DOWN keys
   move obejct in z direction & raise/lower both inner/outer tess factor: A/Z keys
+  scale object: S/X keys
 ***/
 
 #include <gl_yz.h>        // self-defined library
