@@ -1,6 +1,7 @@
 #version 410
 
 in vec3 g_face_normal;
+in vec3 g_patch_distance;
 in vec3 g_tri_distance;
 in float g_primitive;
 
@@ -36,8 +37,10 @@ void main () {
 
 	vec3 final = ambient + diffuse;
 
-	float dist = min(min(g_tri_distance.x, g_tri_distance.y), g_tri_distance.z);
-	final =  amplify (dist, 50, -0.4) * object_color;
+	float d1 = min(min(g_patch_distance.x, g_patch_distance.y), g_patch_distance.z);
+	float d2 = min(min(g_tri_distance.x, g_tri_distance.y), g_tri_distance.z);
+	final =  amplify (d1, 40, -0.4) * amplify (d2, 60, -0.6) * object_color;
+
 	fragment_colour = vec4(final, 1.0);
 
 }

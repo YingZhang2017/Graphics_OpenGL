@@ -76,16 +76,23 @@ int main () {
                         "shader3_gs.glsl",
                         "shader3_fs.glsl");
 
+  Shader shader_tess_4("shader3_vs.glsl",
+                        "shader3_tcs.glsl",
+                        "shader3_tes.glsl",
+                        "shader4_gs.glsl",
+                        "shader4_fs.glsl");
   // create scenes
   currentSceneIndex = 0;
   // add first scene
   Scene * scene1 = createScene1(&shader_tess);
   Scene * scene2 = createScene2(&shader_tess_2);
   Scene * scene3 = createScene3(&shader_tess_3);
+  Scene * scene4 = createScene4(&shader_tess_4);
 
   allScenes.push_back(scene1);
   allScenes.push_back(scene2);
   allScenes.push_back(scene3);
+  allScenes.push_back(scene4);
 
 
   glEnable(GL_DEPTH_TEST);
@@ -350,8 +357,8 @@ static void handleKeyboard (GLFWwindow* window)
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_N)) {
       if (!n_was_down) {
         n_was_down = true;
-        if (currentSceneIndex == allScenes.size() - 1) currentSceneIndex = 0;
-        else currentSceneIndex++;
+        if (currentSceneIndex == 0) currentSceneIndex = allScenes.size() - 1;
+        else currentSceneIndex--;
         cout << "current scene: " << currentSceneIndex << endl;
       }
     } else {
@@ -361,8 +368,8 @@ static void handleKeyboard (GLFWwindow* window)
     if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_M)) {
       if (!m_was_down) {
         m_was_down = true;
-        if (currentSceneIndex == 0) currentSceneIndex = allScenes.size() - 1;
-        else currentSceneIndex--;
+        if (currentSceneIndex == allScenes.size() - 1) currentSceneIndex = 0;
+        else currentSceneIndex++;
         cout << "current scene: " << currentSceneIndex << endl;
       }
     } else {
@@ -391,8 +398,8 @@ Scene* createScene1(Shader * shader) {
   d2->sendUniformToShader();
 
   Dodecahedron* d3 = new Dodecahedron("SteelBlue");
-  d2->setSize(5, 5, 5);
-  d3->setLocation(-4,-2,2);
+  d3->setSize(1.6, 1.6, 1.6);
+  d3->setLocation(-4,-2,0);
   // set shader program for the object
   d3->setShaderProgram(shader);
   d3->sendUniformToShader();
@@ -424,14 +431,14 @@ Scene* createScene2(Shader * shader) {
 
 
   Pyramid* d2 = new Pyramid("Salmon");
-  d2->setSize(1, 1, 1.5);
+  d2->setSize(1.5, 1.5, 2);
   d2->setRotate(45, 1, 1, 0);
   d2->setLocation(0, 2, 2);
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
 
   Dodecahedron* d3 = new Dodecahedron("ForestGreen");
-  d3->setSize(1.2, 1.2, 0.8);
+  d3->setSize(1.5, 1.5, 1.5);
   d3->setLocation(4, -2, 0);
   d3->setShaderProgram(shader);
   d3->sendUniformToShader();
@@ -454,28 +461,73 @@ Scene* createScene2(Shader * shader) {
 */
 Scene* createScene3(Shader * shader) {
   // create objects
-  Pyramid* d1 = new Pyramid("ForestGreen");
+  Pyramid* d1 = new Pyramid("IndiaRed");
   d1->setSize(2, 2, 2);
   d1->setRotate(30, 0, 1, 0);
-  d1->setLocation(-3, 1, 0);
+  d1->setLocation(-4, 0.5, 0);
   d1->setDrawingMode(0);  // 0: fill, 1:line(default)
   d1->setShaderProgram(shader);
   d1->sendUniformToShader();
 
 
-  Cube* d2 = new Cube("Orange");
+  Cube* d2 = new Cube("SteelBlue");
   d2->setSize(2, 2, 3);
   d2->setRotate(78, 1, 1, 1);
-  d2->setLocation(3, 1, 0);
+  d2->setLocation(4, 1.5, 0);
   d2->setDrawingMode(0);  // 0: fill, 1:line(default)
   d2->setShaderProgram(shader);
   d2->sendUniformToShader();
 
 
-  Dodecahedron* d3 = new Dodecahedron(0.4, 0.3, 0.6, 1.0);
+  Dodecahedron* d3 = new Dodecahedron(0.2, 0.8, 0.3, 1.0);
   d3->setSize(1.5, 1.5, 1.5);
   d3->setRotate(60, 0, 1, 0);
   d3->setLocation(0, -2, 0);
+  d3->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d3->setShaderProgram(shader);
+  d3->sendUniformToShader();
+
+  // create Scene
+  Scene * currentScene = new Scene(window_width, window_height);
+  currentScene->addObject(d1);
+  currentScene->addObject(d2);
+  currentScene->addObject(d3);
+  currentScene->addShader(shader);
+  currentScene->sendAllUniformToShaders();
+
+  return currentScene;
+}
+
+
+/*
+* create scene 4: contains 3 3D dode with tess & geo shaders
+* draw in surface
+*/
+Scene* createScene4(Shader * shader) {
+  // create objects
+
+  Dodecahedron* d1 = new Dodecahedron("Orange");
+  d1->setSize(3, 3, 3);
+  d1->setRotate(45, 1, 0, 0);
+  d1->setLocation(4, 2, -2);
+  d1->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d1->setShaderProgram(shader);
+  d1->sendUniformToShader();
+
+
+  Dodecahedron* d2 = new Dodecahedron("DogerBlue");
+  d2->setSize(2, 2, 2);
+  d2->setRotate(70, 0, 1, 1);
+  d2->setLocation(-1, 1, 0);
+  d2->setDrawingMode(0);  // 0: fill, 1:line(default)
+  d2->setShaderProgram(shader);
+  d2->sendUniformToShader();
+
+
+  Dodecahedron* d3 = new Dodecahedron(1.000, 0.412, 0.706, 0.88);
+  d3->setSize(1.5, 1.5, 1.5);
+  d3->setRotate(60, 0, 1, 0);
+  d3->setLocation(0, -2, 1);
   d3->setDrawingMode(0);  // 0: fill, 1:line(default)
   d3->setShaderProgram(shader);
   d3->sendUniformToShader();
