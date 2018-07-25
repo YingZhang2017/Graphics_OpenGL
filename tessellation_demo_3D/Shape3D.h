@@ -2,7 +2,11 @@
  * Shape3D is an abstract class representing an OpenGL graphical object
  * Edited base on cs770's Shape3D.h
  *
- * Ying Zhang, Jul 2018
+ * Author: Ying Zhang
+ * July, 2018
+ *
+ * reference sources:
+ * 1. UNH cs770 base code of demos, R.Daniel.Bergeron
  */
 
 #ifndef Shape3D_H_

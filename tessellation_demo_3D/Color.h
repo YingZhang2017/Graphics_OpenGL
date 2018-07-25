@@ -1,5 +1,11 @@
 /**
  * Color.h -- a class for gl color specification
+ *
+ * Author: Ying Zhang,
+ * July, 2018
+ *
+ * reference sources:
+ * 1. UNH cs770 base code of demos, R.Daniel.Bergeron
  */
 
 #ifndef COLOR_H

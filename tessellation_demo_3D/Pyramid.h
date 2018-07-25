@@ -1,7 +1,11 @@
 /* Pyramid.h - a class implementation representing
  *              a Pryamid object in OpenGL
  *
- * Ying Zhang, Jul 2018
+ * Author: Ying Zhang
+ * July, 2018
+ *
+ * reference sources:
+ * 1. UNH cs770 base code of demos, R.Daniel.Bergeron
  */
 
  #ifndef PYRAMID_H_

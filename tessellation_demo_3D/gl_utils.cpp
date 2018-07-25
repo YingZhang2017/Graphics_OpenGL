@@ -1,3 +1,17 @@
+/*
+ * gl_utils.cpp - a class implementation help funtions for information check and print 
+ *
+ * Author: Ying Zhang
+ * July, 2018
+ *
+ * reference sources:
+ * 1. UNH cs770 base code of demos, R.Daniel.Bergeron
+ *
+ * 2. Accompanies written series "Anton's OpenGL 4 Tutorials"
+ *    Copyright Dr Anton Gerdelan, Trinity College Dublin, Ireland.
+ *    https://github.com/capnramses/antons_opengl_tutorials_book
+ */
+
 #include "gl_utils.h"
 #include <iostream>
 

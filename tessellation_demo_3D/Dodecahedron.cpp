@@ -1,7 +1,12 @@
 /* Dodecahedron.cpp - a class implementation representing
  *              a grest stellated Dodecahedron object in OpenGL
  *
- * Ying Zhang, Jul 2018
+ *
+ * Author: Ying Zhang
+ * July, 2018
+ *
+ * reference sources:
+ * 1. UNH cs770 base code of demos, R.Daniel.Bergeron
  */
 
  #include "Dodecahedron.h"
@@ -41,7 +46,7 @@
    0, 0, -1,      0.5, 0.5, -0.5,     0.5, -0.5, -0.5,
    0, 0, -1,      0.5, -0.5, -0.5,    -0.5, -0.5, -0.5,
    0, 0, -1,      -0.5, -0.5, -0.5,   -0.5, 0.5, -0.5
-   
+
  };
 
  float dnormals [72 * 3];

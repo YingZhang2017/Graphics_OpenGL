@@ -1,8 +1,17 @@
 /*
  * Shader.h is an class representing an OpenGL shader prgram
  *
- * Ying Zhang, Jul 2018
+ * Author: Ying Zhang,
+ * July, 2018
+ *
+ * reference sources:
+ * 1. UNH cs770 base code of demos, R.Daniel.Bergeron
+ *
+ * 2. opengl-tutorial
+ *    Tutorial 8: Basic Shading
+ *    http://www.opengl-tutorial.org/beginners-tutorials/tutorial-8-basic-shading/
  */
+ 
 #include "Shader.h"
 #include "gl_utils.h"
 
