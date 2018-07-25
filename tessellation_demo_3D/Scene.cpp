@@ -218,3 +218,11 @@
                       suv.near,
                       suv.far);
  }
+
+ // ===============  change draw mode of objects ========
+ void Scene::changeDrawingMode() {
+   for (int i = 0; i < objects.size(); i++) {
+     bool mode = objects[i]->getDrawingMode();
+     objects[i]->setDrawingMode(!mode);
+   }
+ }

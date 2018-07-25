@@ -58,9 +58,13 @@ public:
   void sceneTranslate(float x_offset, float y_offset, float z_offset);
   void sceneTessllate(float inner_offset, float outer_offset);
 
+  // change draw mode for all objects in current scene
+  void changeDrawingMode();
+
   // uniform vars
   SecneShaderUniformVars suv;
   void sendAllUniformToShaders();
+
 
 protected:
   vector<Shape3D*> objects;

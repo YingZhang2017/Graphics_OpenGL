@@ -41,7 +41,7 @@ protected:
   mat4 modelMatrix;
   vec3 object_color;
 
-  // drawing mode : 0: LINE, 1: surface
+  // drawing mode. true: draw in line; false: draw in surface
   bool drawLine;
 
 public:
@@ -57,6 +57,8 @@ public:
   inline vec3 getLocation() { return vec3(xLoc, yLoc, zLoc); }
   // return scale
   inline vec3 getScale() { return vec3(xSize, ySize, zSize); }
+  // get drawing mode of current objcect
+  inline bool getDrawingMode() { return drawLine; }
   // set drawing polygen mode, line/fill
   inline void setDrawingMode(bool line) { drawLine = line; }
 

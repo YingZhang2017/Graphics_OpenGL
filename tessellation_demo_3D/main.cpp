@@ -16,6 +16,7 @@ Controller:
   move object in y direction: UP/DOWN keys
   move obejct in z direction & raise/lower both inner/outer tess factor: A/Z keys
   scale object: S/X keys
+  switch between drawing mode(GL_LINE, GL_FILL) : D key (* only for scene 1 & 2)
 ***/
 
 #include <gl_yz.h>        // self-defined library
@@ -36,6 +37,18 @@ Controller:
 using namespace glm;
 using namespace std;
 
+
+// global variables
+
+// static bool draw_line_mode = true;
+/* ---- draw solid line ---
+ * For: scene 4 & 5
+ * draw surface solid lines or not
+ * 1: draw line, else not
+ */
+static int draw_solid_line = 0;
+
+
 // scene
 static int currentSceneIndex;
 vector<Scene*> allScenes;
@@ -44,10 +57,9 @@ vector<Scene*> allScenes;
 int window_width = 1280;
 int window_height = 720;
 
+// static function declarations
 static GLFWwindow* init();
 static void handleKeyboard(GLFWwindow* window);
-
-// create scenes
 Scene* createScene1(Shader* shader);
 Scene* createScene2(Shader* shader);
 Scene* createScene3(Shader* shader);
@@ -315,6 +327,22 @@ static void handleKeyboard (GLFWwindow* window)
     } else {
       m_was_down = false;
     }
+
+
+    // change drawing mode with key D
+    // switch between in line mode or surface mode(GL_LINE or GL_FILL)
+    // only works for scene 1, 2
+    static bool d_was_down = false;
+
+    if (GLFW_PRESS == glfwGetKey (window, GLFW_KEY_D) && currentSceneIndex < 2) {
+      if (!d_was_down) {
+        d_was_down = true;
+        allScenes[currentSceneIndex]->changeDrawingMode();
+      }
+    } else {
+      d_was_down = false;
+    }
+
 }
 
 /*
@@ -445,7 +473,8 @@ Scene* createScene3(Shader * shader) {
 */
 Scene* createScene4(Shader * shader) {
   // set shader draw with line
-  shader->setInt("draw_line", 0);
+  shader->use();
+  shader->setInt("draw_solid_line", draw_solid_line);
 
   // create objects
   Dodecahedron* d1 = new Dodecahedron("Orange");
@@ -491,7 +520,8 @@ Scene* createScene4(Shader * shader) {
 */
 Scene* createScene5(Shader * shader) {
   // set shader draw without line
-  shader->setInt("draw_line", 1);
+  shader->use();
+  shader->setInt("draw_solid_line", draw_solid_line);
 
   // create objects
   Cube* d1 = new Cube(0.832, 0.223, 0.456, 1.0);
